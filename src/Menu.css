@@ -1,0 +1,25 @@
+.Menu {
+    position: relative;
+    overflow-y: scroll;
+    height: 91vh;
+    padding: 0 10px;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.Menu::-webkit-scrollbar {
+    width: 5px;
+}
+
+.menudiv {
+    margin-top: 5px;
+    border-bottom: 1px solid #d9d6d6;
+}
+
+h3 {
+    font-size: 15px;
+}
+
+.HiddenMenu {
+    padding: 0;
+}

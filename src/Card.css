@@ -1,0 +1,63 @@
+.card {
+    /* flex: 1; */
+    margin: 5px;
+    border-radius: 0 0 15px 15px;
+    max-width: 400px;
+    width: auto;
+}
+.card:hover {
+    cursor: pointer;
+}
+
+.card img {
+    width: 400px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.thumbnail:hover {
+    border-radius: 0px;
+}
+
+.card .info {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    padding-left: 20px;
+}
+
+.info .videotitle {
+    text-wrap: wrap;
+}
+
+.info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.videotitle {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.channelname {
+    margin: 0;
+    font-size: 13px;
+}
+
+.info .viewsntime {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+}
+
+.views {
+    margin: 0px;
+}
+.time {
+    margin: 0px;
+}

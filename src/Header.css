@@ -1,0 +1,149 @@
+.head {
+    box-sizing: border-box;
+    height: 60px;
+    display: flex;
+    padding: 5px 0;
+    flex-direction: row;
+    justify-content: space-between;
+    vertical-align: middle;
+}
+.iconntitle {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.iconntitle:hover {
+    cursor: pointer;
+}
+
+.iconntitle p {
+    margin-left: 5px;
+    font-size: 15px;
+    font-weight: 600;
+}
+.iconntitle img {
+    width: 30px;
+}
+
+.toggle-menu {
+    height: 32px;
+    width: 32px;
+    border: none;
+    background-color: transparent;
+    margin-right: 20px;
+    vertical-align: middle;
+}
+
+.toggle-menu img {
+    width: 18px;
+    filter: var(--image-filter);
+}
+
+.toggle-menu:hover {
+    cursor: pointer;
+    background-color: #d9d6d6;
+    border-radius: 50%;
+}
+
+.search {
+    margin-top: 3px;
+    display: flex;
+    flex-direction: row;
+    vertical-align: middle;
+}
+
+.search input {
+    width: 450px;
+    height: 30px;
+    padding-left: 10px;
+    font-size: 15px;
+    /* color: #505050; */
+    border: 1px solid #d9d6d6;
+    border-radius: 30px 0 0 30px;
+}
+
+.search input:focus {
+    outline: none;
+    border: 1px solid #7f7f7f;
+}
+
+.search input::placeholder {
+    font-size: 13px;
+    /* color: #505050; */
+    vertical-align: middle;
+}
+
+.search button {
+    width: 60px;
+    height: 33.5px;
+    margin-top: 3px;
+    /* background-color: #fafafa; */
+    border: 1px solid #d9d6d6;
+    border-radius: 0 30px 30px 0;
+}
+
+.search button:hover {
+    cursor: pointer;
+    background-color: #b2b2b2;
+}
+
+.search img {
+    height: 25px;
+    filter: var(--image-filter);
+}
+
+.profile {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 30px;
+    width: 150px;
+}
+
+.create {
+    width: 20px;
+    padding: 6.5px;
+    border-radius: 50%;
+    filter: var(--image-filter);
+}
+
+.toogle-theme {
+    width: 20px;
+    padding: 6.5px;
+    border-radius: 50%;
+    filter: var(--image-filter);
+}
+
+.notifications {
+    width: 20px;
+    padding: 6px;
+    border-radius: 50%;
+    filter: var(--image-filter);
+}
+
+.profilepic {
+    border-radius: 50%;
+    width: 35px;
+}
+
+.profilepic:hover {
+    cursor: pointer;
+}
+
+.notifications:hover {
+    cursor: pointer;
+    background-color: #d9d6d6;
+}
+.toogle-theme:hover {
+    cursor: pointer;
+    background-color: #d9d6d6;
+}
+
+.create:hover {
+    cursor: pointer;
+    background-color: #d9d6d6;
+}

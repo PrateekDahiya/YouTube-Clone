@@ -1,0 +1,19 @@
+/* themes.css */
+:root {
+    --background-color-light: #ffffff;
+    --text-color-light: #000000;
+    --background-color-dark: #1e1e1e;
+    --text-color-dark: #ffffff;
+}
+
+body.light {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+    --image-filter: none;
+}
+
+body.dark {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+    --image-filter: invert(1);
+}

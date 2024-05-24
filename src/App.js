@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Menu from "./Menu";
+import Header from "./Header";
+import Cardlist from "./Cardlist";
+import "./App.css";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [menu, setMenu] = useState("Full");
+    const [cardpos, setcardpos] = useState("default");
+    const toggleMenu = () => {
+        if (menu === "Hidden") {
+            setMenu("Full");
+            setcardpos("default");
+        } else {
+            setMenu("Hidden");
+            setcardpos("wider");
+        }
+    };
+
+    const [data, setData] = useState("");
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch("/name");
+            const jsonData = await response.json();
+            setData(jsonData);
+            console.log(data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    return (
+        <div className="App">
+            <Header onClick={toggleMenu} />
+            <div className="menuncontent">
+                <Menu menuStyle={menu} />
+                <Cardlist cardposition={cardpos} />
+            </div>
+        </div>
+    );
 }
 
 export default App;
