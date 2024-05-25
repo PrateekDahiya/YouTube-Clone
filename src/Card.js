@@ -41,31 +41,30 @@ const Card = (params) => {
             return num.toString();
         }
     }
+    var i = 0;
 
     return (
-        <div>
-            <div className="card">
-                <img
-                    className="thumbnail"
-                    src={params.data.thumbnail}
-                    alt={params.data.title}
-                />
-                <div className="info">
-                    <img src={params.data.cicon} alt={params.data.cname} />
-                    <div className="text">
-                        <p className="videotitle">{params.data.title}</p>
-                        <p className="channelname">{params.data.cname}</p>
-                        <div className="viewsntime">
-                            <p className="views">
-                                {formatNumber(params.data.views)} views &bull;
-                            </p>
-                            <p className="time">
-                                {getDateDifference(
-                                    new Date(),
-                                    new Date(params.data.time)
-                                ) + " ago"}
-                            </p>
-                        </div>
+        <div className="card" key={i++}>
+            <img
+                className="thumbnail"
+                src={params.data.thumbnail}
+                alt={params.data.title}
+            />
+            <div className="info">
+                <img src={params.data.cicon} alt={params.data.cname} />
+                <div className="text">
+                    <p className="videotitle">{params.data.title}</p>
+                    <p className="channelname">{params.data.cname}</p>
+                    <div className="viewsntime">
+                        <p className="views">
+                            {formatNumber(params.data.views)} views &bull;
+                        </p>
+                        <p className="time">
+                            {getDateDifference(
+                                new Date(),
+                                new Date(params.data.time)
+                            ) + " ago"}
+                        </p>
                     </div>
                 </div>
             </div>

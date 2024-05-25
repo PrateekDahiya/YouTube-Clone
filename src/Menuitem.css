@@ -14,9 +14,8 @@
 }
 
 .item:hover {
-     cursor: pointer;
-    background-color: #d9d6d6;
-   
+    cursor: pointer;
+    background-color: var(--alt-color);
 }
 
 .defaultimg {
@@ -60,6 +59,5 @@
 }
 .hiddenitem:hover {
     cursor: pointer;
-    background-color: #d9d6d6;
-    
+    background-color: var(--alt-color);
 }

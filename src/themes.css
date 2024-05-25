@@ -1,19 +1,17 @@
-/* themes.css */
-:root {
-    --background-color-light: #ffffff;
-    --text-color-light: #000000;
-    --background-color-dark: #1e1e1e;
-    --text-color-dark: #ffffff;
-}
-
 body.light {
-    background-color: var(--background-color-light);
-    color: var(--text-color-light);
+    --background-color: #f0f0f0;
+    --text-color: #0f0f0f;
+    background-color: var(--background-color);
+    color: var(--text-color);
     --image-filter: none;
+    --alt-color: #d9d6d6;
 }
 
 body.dark {
-    background-color: var(--background-color-dark);
-    color: var(--text-color-dark);
+    --background-color: #0f0f0f;
+    --text-color: #ffffff;
+    background-color: var(--background-color);
+    color: var(--text-color);
     --image-filter: invert(1);
+    --alt-color: #262929;
 }

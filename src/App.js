@@ -6,14 +6,19 @@ import "./App.css";
 
 function App() {
     const [menu, setMenu] = useState("Full");
-    const [cardpos, setcardpos] = useState("default");
     const toggleMenu = () => {
         if (menu === "Hidden") {
             setMenu("Full");
-            setcardpos("default");
+            const cardElements = document.querySelectorAll(".wider");
+            cardElements.forEach((element) => {
+                element.className = "card";
+            });
         } else {
             setMenu("Hidden");
-            setcardpos("wider");
+            const cardElements = document.querySelectorAll(".card");
+            cardElements.forEach((element) => {
+                element.className = "wider";
+            });
         }
     };
 
@@ -33,12 +38,13 @@ function App() {
             console.error("Error fetching data:", error);
         }
     };
+
     return (
         <div className="App">
             <Header onClick={toggleMenu} />
             <div className="menuncontent">
                 <Menu menuStyle={menu} />
-                <Cardlist cardposition={cardpos} />
+                <Cardlist />
             </div>
         </div>
     );
