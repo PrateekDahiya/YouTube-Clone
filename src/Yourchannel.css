@@ -1,0 +1,71 @@
+.outer {
+    height: 91vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.info {
+    height: fit-content;
+    width: 100%;
+    padding-left: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+}
+
+.mypic {
+    height: 150px;
+    border-radius: 50%;
+}
+
+.details {
+    padding-left: 20px;
+}
+
+.details .name {
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.details .buttons button {
+    color: var(--text-color);
+    border-radius: 20px;
+    padding: 10px;
+    margin-right: 5px;
+    background-color: var(--alt-color);
+    border: none;
+}
+
+.details .buttons button:hover {
+    cursor: pointer;
+    background-color: var(--background-color);
+}
+
+.videos {
+    height: 200px;
+    width: 100%;
+}
+
+.menus {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid var(--alt-color);
+    padding-left: 100px;
+    margin: 0;
+}
+
+.menus p {
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 20px;
+    padding: 0;
+    color: var(--text-color);
+}
+
+.menus img {
+    width: 22px;
+    height: 22px;
+    filter: var(--image-filter);
+    margin: 14px;
+}

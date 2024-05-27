@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Menu from "./Menu";
 import Header from "./Header";
-import Cardlist from "./Cardlist";
+import Home from "./Home";
+import Watch from "./Watch";
+import Yourchannel from "./Yourchannel";
 import "./App.css";
 
 function App() {
@@ -23,28 +25,43 @@ function App() {
     };
 
     const [data, setData] = useState("");
-
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const [crntpage, setcrntpage] = useState("");
 
     const fetchData = async () => {
         try {
-            const response = await fetch("/name");
+            const path = window.location.pathname;
+            const response = await fetch(path);
             const jsonData = await response.json();
             setData(jsonData);
             console.log(data);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
+        console.log(data.page);
     };
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        setcrntpage(data.page);
+        console.log(crntpage);
+    }, [data]);
 
     return (
         <div className="App">
             <Header onClick={toggleMenu} />
             <div className="menuncontent">
                 <Menu menuStyle={menu} />
-                <Cardlist />
+                {crntpage === "home" ? (
+                    <Home />
+                ) : crntpage === "watch" ? (
+                    <Watch />
+                ) : crntpage === "yourchannel" ? (
+                    <Yourchannel />
+                ) : (
+                    <div>404</div>
+                )}
             </div>
         </div>
     );

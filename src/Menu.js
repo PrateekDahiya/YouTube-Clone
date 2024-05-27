@@ -44,7 +44,7 @@ function Menu(params) {
                         <Menuitem title="You >" head="/me" />
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/456/456212.png"
-                            title="Your Channel"
+                            title="Your channel"
                             head="/yourchannel"
                         />
                         <Menuitem
@@ -59,17 +59,17 @@ function Menu(params) {
                         />
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/2991/2991195.png"
-                            title="Your Videos"
+                            title="Your videos"
                             head="/yourvideos"
                         />
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/15469/15469061.png"
-                            title="Watch Later"
+                            title="Watch later"
                             head="/watchlater"
                         />
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/126/126473.png"
-                            title="Liked Videos"
+                            title="Liked videos"
                             head="/likedvideos"
                         />
                     </div>
@@ -158,7 +158,7 @@ function Menu(params) {
                         />
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/813/813419.png"
-                            title="Send Feedback"
+                            title="Send feedback"
                             head="/sendfeedback"
                         />
                     </div>

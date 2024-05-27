@@ -1,0 +1,27 @@
+.cards {
+    flex: 1;
+    height: 91vh;
+    width: fit-content;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    overflow-y: scroll;
+}
+
+.cards::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.cards::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 10px;
+}
+
+.cards::-webkit-scrollbar-thumb {
+    background: var(--text-color);
+}
+
+.cards::-webkit-scrollbar-thumb:hover {
+    background: var(--alt-color);
+}
