@@ -33,11 +33,9 @@ function App() {
             const response = await fetch(path);
             const jsonData = await response.json();
             setData(jsonData);
-            console.log(data);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-        console.log(data.page);
     };
     useEffect(() => {
         fetchData();
@@ -45,7 +43,6 @@ function App() {
 
     useEffect(() => {
         setcrntpage(data.page);
-        console.log(crntpage);
     }, [data]);
 
     return (
@@ -54,13 +51,13 @@ function App() {
             <div className="menuncontent">
                 <Menu menuStyle={menu} />
                 {crntpage === "home" ? (
-                    <Home />
+                    <Home data={data.videos} />
                 ) : crntpage === "watch" ? (
-                    <Watch />
+                    <Watch video={data.video_id} />
                 ) : crntpage === "yourchannel" ? (
                     <Yourchannel />
                 ) : (
-                    <div>404</div>
+                    <p>Happy</p>
                 )}
             </div>
         </div>

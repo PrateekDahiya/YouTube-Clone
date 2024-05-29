@@ -41,20 +41,22 @@ const Card = (params) => {
             return num.toString();
         }
     }
-    var i = 0;
 
     return (
-        <div className="card" key={i++}>
+        <div className="card" onClick={() => params.onClick(params.data.link)}>
             <img
                 className="thumbnail"
-                src={params.data.thumbnail}
+                src={params.data.thumbnail_link}
                 alt={params.data.title}
             />
             <div className="info">
-                <img src={params.data.cicon} alt={params.data.cname} />
+                <img
+                    src={params.data.channel_icon}
+                    alt={params.data.channel_name}
+                />
                 <div className="text">
                     <p className="videotitle">{params.data.title}</p>
-                    <p className="channelname">{params.data.cname}</p>
+                    <p className="channelname">{params.data.channel_name}</p>
                     <div className="viewsntime">
                         <p className="views">
                             {formatNumber(params.data.views)} views &bull;
@@ -62,7 +64,7 @@ const Card = (params) => {
                         <p className="time">
                             {getDateDifference(
                                 new Date(),
-                                new Date(params.data.time)
+                                new Date(params.data.upload_time)
                             ) + " ago"}
                         </p>
                     </div>

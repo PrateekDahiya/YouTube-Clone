@@ -19,9 +19,9 @@
 }
 
 .cards::-webkit-scrollbar-thumb {
-    background: var(--text-color);
+    background: var(--alt-color);
 }
 
 .cards::-webkit-scrollbar-thumb:hover {
-    background: var(--alt-color);
+    background: var(--text-color);
 }
