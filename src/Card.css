@@ -10,7 +10,7 @@
 
 .card img {
     width: 100%;
-    height: 240px;
+    height: 230px;
     object-fit: cover;
     border-radius: 10px;
 }
@@ -23,7 +23,6 @@
     display: flex;
     flex-direction: row;
     padding: 10px;
-    padding-left: 20px;
 }
 
 .card .info .videotitle {
@@ -64,15 +63,14 @@
 
 .wider {
     width: 23%;
-    height: 320px;
-    margin: 10px;
+    margin: 5px;
     border-radius: 0 0 15px 15px;
     justify-content: space-between;
 }
 
 .wider img {
     width: 100%;
-    height: 200px;
+    height: 188px;
     object-fit: cover;
     border-radius: 10px;
 }
@@ -88,7 +86,6 @@
     display: flex;
     flex-direction: row;
     padding: 10px;
-    padding-left: 20px;
 }
 
 .wider .info .videotitle {
