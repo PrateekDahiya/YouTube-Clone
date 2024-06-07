@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
-import "./Home.css";
+import "./Shorts.css";
 
-const Home = (params) => {
+const Shorts = (params) => {
     const [data, setData] = useState("");
     const fetchData = async () => {
         try {
-            const response = await fetch("/home");
+            const response = await fetch("/shorts");
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
@@ -41,4 +41,4 @@ const Home = (params) => {
     );
 };
 
-export default Home;
+export default Shorts;

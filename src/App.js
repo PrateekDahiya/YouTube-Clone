@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Menu from "./Menu";
 import Header from "./Header";
 import Home from "./Home";
+import Shorts from "./Shorts";
 import Watch from "./Watch";
+import Subscription from "./Subscription";
 import Yourchannel from "./Yourchannel";
+import Channel from "./Channel";
+import Category from "./Category";
+
 import "./App.css";
 
 function App() {
@@ -23,42 +29,37 @@ function App() {
             });
         }
     };
-
-    const [data, setData] = useState("");
-    const [crntpage, setcrntpage] = useState("");
-
-    const fetchData = async () => {
-        try {
-            const path = window.location.pathname;
-            const response = await fetch(path);
-            const jsonData = await response.json();
-            setData(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        setcrntpage(data.page);
-    }, [data]);
-
     return (
         <div className="App">
             <Header onClick={toggleMenu} />
             <div className="menuncontent">
                 <Menu menuStyle={menu} />
-                {crntpage === "home" ? (
-                    <Home data={data.videos} />
-                ) : crntpage === "watch" ? (
-                    <Watch video={data.video_id} />
-                ) : crntpage === "yourchannel" ? (
-                    <Yourchannel />
-                ) : (
-                    <p>Happy</p>
-                )}
+                <Router>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/home" element={<Home />} />
+                        <Route path="/shorts" element={<Shorts />} />
+                        <Route
+                            path="/watch"
+                            element={<Watch onClick={toggleMenu} />}
+                        />
+                        <Route path="/yourchannel" element={<Yourchannel />} />
+                        <Route path="/channel" element={<Channel />} />
+                        <Route
+                            path="/subscriptions"
+                            element={<Subscription />}
+                        />
+                        <Route path="/category" element={<Category />} />
+                        <Route
+                            element={
+                                <>
+                                    <h1>Error 404</h1>
+                                    <h2>Page Not Found</h2>
+                                </>
+                            }
+                        />
+                    </Routes>
+                </Router>
             </div>
         </div>
     );

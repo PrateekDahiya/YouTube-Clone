@@ -1,6 +1,6 @@
 .outer {
     height: 91vh;
-    width: 150vh;
+    width: 170vh;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -10,6 +10,19 @@
 .outer::-webkit-scrollbar {
     width: 10px;
     height: 10px;
+}
+
+.outer::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 10px;
+}
+
+.outer::-webkit-scrollbar-thumb {
+    background: var(--alt-color);
+}
+
+.outer::-webkit-scrollbar-thumb:hover {
+    background: var(--text-color);
 }
 
 .channelinfo {
@@ -22,16 +35,16 @@
 
 .banner {
     width: 100%;
+    height: 170px;
     margin-bottom: 25px;
-    border-radius: 30px;
+    display: flex;
 }
 
 .banner img {
-    position: relative;
-    height: 150px;
-    width: 150px;
-    left: 50%;
-    transform: translate(-50%, 0);
+    width: 100%;
+    border-radius: 20px;
+    height: auto;
+    object-fit: cover;
 }
 
 .mypic {
@@ -41,6 +54,10 @@
 
 .details {
     margin-left: 20px;
+}
+
+.id {
+    color: var(--text2-color);
 }
 
 .details .name {
@@ -65,11 +82,64 @@
     background-color: var(--text2-color);
 }
 
+.desc {
+    cursor: pointer;
+    color: var(--text2-color);
+}
+
+.moredesc {
+    height: 500px;
+    display: none;
+    width: 400px;
+    left: 650px;
+    top: 100px;
+    position: absolute;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: var(--alt-color);
+    cursor: pointer;
+    border: 3px solid var(--background-color);
+    z-index: 2;
+}
+
+.close-btn {
+    position: relative;
+    left: 300px;
+    padding: 5px;
+    font-size: 15px;
+    border-radius: 50%;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background-color: var(--background-color);
+}
+
+.descdata {
+    color: var(--text-color);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.descdata img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    filter: var(--image-filter);
+}
+
+.deschead {
+    color: var(--text-color);
+    font-size: 18px;
+    font-weight: 800;
+}
+
 .menus {
     display: flex;
     flex-direction: row;
     border-bottom: 1px solid var(--alt-color);
-    margin-left: 100px;
+    padding-left: 30px;
     margin: 0;
 }
 
@@ -101,6 +171,13 @@
     border: none;
     margin-top: 14px;
     height: 22px;
+    border-radius: 10px;
+    padding-left: 10px;
+    color: var(--text-color);
+}
+
+.menus input::placeholder {
+    padding-left: 2px;
 }
 
 .videos {

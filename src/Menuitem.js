@@ -4,10 +4,15 @@ import "./Menuitem.css";
 const Menuitem = (params) => {
     const handleClick = () => {
         window.location.href = params.head;
+        params.onClick();
     };
+
+    const itemClass = params.menu === "Hidden" ? "hiddenitem" : "item";
+    const imgClass = params.profile ? "profileimg" : "defaultimg";
+
     return (
         <div
-            className={params.menu === "Hidden" ? "hiddenitem" : "item"}
+            className={params.isSelected ? `${itemClass} selected` : itemClass}
             onClick={handleClick}
         >
             {params.imgpath !== undefined ? (
@@ -25,9 +30,7 @@ const Menuitem = (params) => {
                         <img
                             src={params.imgpath}
                             alt={params.title}
-                            className={
-                                params.profile ? "profileimg" : "defaultimg"
-                            }
+                            className={imgClass}
                         />
                         <p>{params.title}</p>
                     </>

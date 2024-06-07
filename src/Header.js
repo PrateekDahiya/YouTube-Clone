@@ -5,10 +5,10 @@ import "./themes.css";
 
 const Header = (params) => {
     const { theme, toggleTheme } = useContext(ThemeContext);
-
     useEffect(() => {
         document.body.className = theme;
     }, [theme]);
+
     return (
         <div className="head">
             <div className="iconntitle">
@@ -18,11 +18,21 @@ const Header = (params) => {
                         alt="toggle-menu"
                     />
                 </button>
+
                 <img
                     src="https://cdn-icons-png.flaticon.com/128/1384/1384060.png"
                     alt="youtube"
+                    onClick={() => {
+                        window.location.href = "/home";
+                    }}
                 />
-                <p>YouTube</p>
+                <p
+                    onClick={() => {
+                        window.location.href = "/home";
+                    }}
+                >
+                    YouTube
+                </p>
             </div>
             <div className="search">
                 <input type="text" placeholder="Search" className="search" />

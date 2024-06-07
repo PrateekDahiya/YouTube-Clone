@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import "./Yourchannel.css";
+import "./Channel.css";
 import Card from "./Card";
 
-const Yourchannel = (params) => {
+const Channel = (params) => {
     const [data, setData] = useState("");
     const [videos, setVideos] = useState("");
     const [typeShort, setType] = useState(0);
 
     const fetchData = async () => {
         try {
-            let getreq = "/yourchannel" + window.location.search;
+            let getreq = "/channel" + window.location.search;
             const response = await fetch(getreq);
             const jsonData = await response.json();
             setData(jsonData);
@@ -35,9 +35,6 @@ const Yourchannel = (params) => {
 
     useEffect(() => {
         fetchData();
-    }, []);
-
-    useEffect(() => {
         fetchVideos();
     }, [typeShort]);
 
@@ -49,6 +46,14 @@ const Yourchannel = (params) => {
         } else {
             return num.toString();
         }
+    }
+
+    function getshortinfo(str) {
+        if (str.length <= 50) {
+            return str;
+        }
+        const lastSpaceIndex = str.substring(0, 65).lastIndexOf(" ");
+        return str.substring(0, lastSpaceIndex);
     }
 
     function formatNumberWithCommas(number) {
@@ -64,6 +69,7 @@ const Yourchannel = (params) => {
         const options = { year: "numeric", month: "short", day: "numeric" };
         return date.toLocaleDateString("en-US", options);
     }
+
     function show_moredesc() {
         let x = document.querySelector(".moredesc");
         if (x.style.display === "none") {
@@ -72,7 +78,6 @@ const Yourchannel = (params) => {
             x.style.display = "none";
         }
     }
-
     function close_moredesc() {
         let x = document.querySelector(".moredesc");
         if (x.style.display === "block") {
@@ -80,14 +85,6 @@ const Yourchannel = (params) => {
         } else {
             x.style.display = "block";
         }
-    }
-
-    function getshortinfo(str) {
-        if (str.length <= 50) {
-            return str;
-        }
-        const lastSpaceIndex = str.substring(0, 65).lastIndexOf(" ");
-        return str.substring(0, lastSpaceIndex);
     }
 
     return (
@@ -104,6 +101,7 @@ const Yourchannel = (params) => {
                     ) : (
                         ""
                     )}
+
                     <div className="channelinfo">
                         <img
                             className="mypic"
@@ -168,8 +166,7 @@ const Yourchannel = (params) => {
                                         alt="datashow"
                                         src="https://cdn-icons-png.flaticon.com/128/1179/1179120.png"
                                     />
-                                    {formatNumber(data.channel[0].video_count)}
-                                    {""}
+                                    {formatNumber(data.channel[0].video_count)}{" "}
                                     videos
                                 </p>
                                 <p className="descdata">
@@ -253,4 +250,4 @@ const Yourchannel = (params) => {
     );
 };
 
-export default Yourchannel;
+export default Channel;

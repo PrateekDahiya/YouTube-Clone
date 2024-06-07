@@ -5,6 +5,7 @@ body.light {
     color: var(--text-color);
     --image-filter: none;
     --alt-color: #d9d6d6;
+    --text2-color: #1f1f1f;
 }
 
 body.dark {
@@ -14,4 +15,5 @@ body.dark {
     color: var(--text-color);
     --image-filter: invert(1);
     --alt-color: #262929;
+    --text2-color: #a0a0a0;
 }
