@@ -63,12 +63,12 @@ const Watch = (params) => {
             params.onClick();
             i++;
         }
-    }, []);
+    }, [i, params]);
 
     useEffect(() => {
         fetchwatchdata();
         params.onClick();
-    }, []);
+    }, [params]);
 
     return (
         <>
