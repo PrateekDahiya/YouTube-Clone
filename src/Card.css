@@ -15,6 +15,20 @@
     border-radius: 10px;
 }
 
+.duration {
+    position: relative;
+    bottom: 35px; /* Adjust as needed */
+    left: 85%; /* Adjust as needed */
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.card .thumbnail {
+    position: relative;
+}
 .card .thumbnail:hover {
     border-radius: 0px;
 }
@@ -38,7 +52,7 @@
 
 .card .videotitle {
     margin: 0;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 500;
 }
 

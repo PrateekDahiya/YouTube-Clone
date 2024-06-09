@@ -61,3 +61,11 @@
     cursor: pointer;
     background-color: var(--alt-color);
 }
+
+.selected {
+    background-color: var(--alt-color);
+}
+
+.selected:hover {
+    background-color: rgb(95, 95, 95);
+}

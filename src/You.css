@@ -35,7 +35,7 @@
 }
 
 .mypic {
-    height: 150px;
+    height: 100px;
     border-radius: 50%;
 }
 
@@ -49,9 +49,13 @@
     margin: 0;
 }
 
-.subbuttons button {
+.id {
+    cursor: pointer;
+}
+
+.mebuttons button {
     color: var(--text2-color);
-    font-weight: 500;
+    font-weight: 700;
     border-radius: 20px;
     padding: 10px;
     margin-right: 5px;
@@ -59,54 +63,8 @@
     border: none;
 }
 
-.subbuttons button:hover {
+.mebuttons button:hover {
     cursor: pointer;
     color: var(--alt-color);
     background-color: var(--text2-color);
-}
-
-.menus {
-    display: flex;
-    flex-direction: row;
-    border-bottom: 1px solid var(--alt-color);
-    margin-left: 100px;
-    margin: 0;
-}
-
-.menubutton {
-    font-size: 14px;
-    color: var(--text2-color);
-    font-weight: 500;
-    margin-right: 20px;
-    padding: 0;
-    color: var(--text2-color);
-    cursor: pointer;
-}
-
-.active {
-    font-weight: 500;
-    color: var(--text-color);
-    border-bottom: 1px solid var(--text-color);
-}
-
-.menus img {
-    width: 22px;
-    height: 22px;
-    filter: var(--image-filter);
-    margin: 14px;
-}
-
-.menus input {
-    background-color: var(--alt-color);
-    border: none;
-    margin-top: 14px;
-    height: 22px;
-}
-
-.videos {
-    flex: 1;
-    height: 91vh;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
 }

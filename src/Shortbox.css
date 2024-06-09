@@ -1,0 +1,45 @@
+.shortsbox {
+    display: flex;
+    flex-direction: row;
+}
+
+.short-btns {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    height: 640px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.short-btns p {
+    margin: 0;
+}
+
+.shorts-btn {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    background-color: var(--alt-color);
+    text-align: center;
+    margin-left: 15px;
+}
+
+.shorts-btn:hover {
+    background-color: var(--text2-color);
+}
+
+.shorts-btn img {
+    filter: var(--image-filter);
+    width: 30px;
+    padding: 10px;
+}
+
+.profile-btn {
+    border-radius: 20px;
+}
+
+.profile-btn img {
+    width: 40px;
+    padding: 15px;
+}

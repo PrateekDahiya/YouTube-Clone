@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
-import "./Home.css";
+import "./Search.css";
 
-const Home = (params) => {
+const Search = () => {
     const [data, setData] = useState("");
     const fetchData = async () => {
         try {
-            const response = await fetch("/home");
+            const getreq = "/search" + window.location.search;
+            const response = await fetch(getreq);
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
@@ -18,9 +19,8 @@ const Home = (params) => {
         fetchData();
     }, []);
 
-    const handleClick = (video, isShort) => {
-        window.location.href =
-            (isShort ? "shorts?video_id=" : "shorts?video_id=") + video;
+    const handleClick = (video) => {
+        window.location.href = "watch?video_id=" + video;
     };
 
     return (
@@ -31,9 +31,7 @@ const Home = (params) => {
                         <Card
                             key={item.video_id}
                             data={item}
-                            onClick={() =>
-                                handleClick(item.video_id, item.isShort)
-                            }
+                            onClick={() => handleClick(item.video_id)}
                         />
                     ))}
                 </div>
@@ -44,4 +42,4 @@ const Home = (params) => {
     );
 };
 
-export default Home;
+export default Search;

@@ -1,14 +1,16 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "./ThemeContext.js";
 import "./Header.css";
 import "./themes.css";
 
 const Header = (params) => {
+    const [query, setQuery] = useState("");
     const { theme, toggleTheme } = useContext(ThemeContext);
 
     useEffect(() => {
         document.body.className = theme;
     }, [theme]);
+
     return (
         <div className="head">
             <div className="iconntitle">
@@ -18,15 +20,37 @@ const Header = (params) => {
                         alt="toggle-menu"
                     />
                 </button>
+
                 <img
                     src="https://cdn-icons-png.flaticon.com/128/1384/1384060.png"
                     alt="youtube"
+                    onClick={() => {
+                        window.location.href = "/home";
+                    }}
                 />
-                <p>YouTube</p>
+                <p
+                    onClick={() => {
+                        window.location.href = "/home";
+                    }}
+                >
+                    YouTube
+                </p>
             </div>
             <div className="search">
-                <input type="text" placeholder="Search" className="search" />
-                <button className="searchbutton">
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search"
+                    className="search"
+                />
+                <button
+                    type="submit"
+                    className="searchbutton"
+                    onClick={() => {
+                        window.location.href = "/search?query=" + query;
+                    }}
+                >
                     <img
                         src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
                         alt="search"

@@ -1,0 +1,46 @@
+.subsbox {
+    display: flex;
+    flex-direction: column;
+    height: 91vh;
+    width: 90%;
+    overflow-y: scroll;
+}
+
+.subsbox::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.subsbox::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 10px;
+}
+
+.subsbox::-webkit-scrollbar-thumb {
+    background: var(--alt-color);
+}
+
+.subsbox::-webkit-scrollbar-thumb:hover {
+    background: var(--text-color);
+}
+
+.subsheading {
+    font-size: 40px;
+    margin-left: 10px;
+    font-weight: 700;
+}
+
+.subsvideos {
+    flex: 1;
+    height: 80vh;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.subsicon {
+    height: 100px;
+    width: 100px;
+    margin: 10px;
+    filter: var(--image-filter);
+}
