@@ -1,43 +1,34 @@
 import { useEffect, useState } from "react";
-import Card from "./Card";
+import Shortbox from "./Shortbox";
 import "./Shorts.css";
 
 const Shorts = (params) => {
-    const [data, setData] = useState("");
-    const fetchData = async () => {
-        try {
+    const [shortdata, setShortdata] = useState([]);
+
+    const fetchShorts = async () => {
+        if (window.location.search) {
+            const response = await fetch("/shorts" + window.location.search);
+            const data = await response.json();
+            setShortdata(data);
+        } else {
             const response = await fetch("/shorts");
-            const jsonData = await response.json();
-            setData(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
+            const data = await response.json();
+            setShortdata(data);
         }
     };
 
     useEffect(() => {
-        fetchData();
+        fetchShorts();
     }, []);
 
-    const handleClick = (video) => {
-        window.location.href = "watch?video_id=" + video;
-    };
-
     return (
-        <>
-            {data.videos ? (
-                <div className="cards">
-                    {data.videos.map((item) => (
-                        <Card
-                            key={item.video_id}
-                            data={item}
-                            onClick={() => handleClick(item.video_id)}
-                        />
-                    ))}
-                </div>
+        <div className="shorts-container">
+            {shortdata.shorts_vIds ? (
+                <Shortbox data={shortdata} />
             ) : (
-                <p>Loading..</p>
+                <div>Loading...</div>
             )}
-        </>
+        </div>
     );
 };
 

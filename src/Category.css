@@ -49,3 +49,19 @@
     display: flex;
     flex-wrap: wrap;
 }
+
+.menubutton {
+    font-size: 14px;
+    color: var(--text2-color);
+    font-weight: 500;
+    margin-right: 20px;
+    padding: 0;
+    color: var(--text2-color);
+    cursor: pointer;
+}
+
+.active {
+    font-weight: 500;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--text-color);
+}

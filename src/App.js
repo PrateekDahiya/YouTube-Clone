@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Menu from "./Menu";
 import Header from "./Header";
 import Home from "./Home";
 import Shorts from "./Shorts";
+import You from "./You";
 import Watch from "./Watch";
 import Subscription from "./Subscription";
 import Yourchannel from "./Yourchannel";
 import Channel from "./Channel";
 import Category from "./Category";
+import Search from "./Search";
 
 import "./App.css";
 
@@ -29,6 +31,7 @@ function App() {
             });
         }
     };
+
     return (
         <div className="App">
             <Header onClick={toggleMenu} />
@@ -38,7 +41,9 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
+                        <Route path="/search" element={<Search />} />
                         <Route path="/shorts" element={<Shorts />} />
+                        <Route path="/me" element={<You />} />
                         <Route
                             path="/watch"
                             element={<Watch onClick={toggleMenu} />}

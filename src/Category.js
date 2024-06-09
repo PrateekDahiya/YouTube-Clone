@@ -3,19 +3,17 @@ import Card from "./Card";
 import "./Category.css";
 
 const Category = (params) => {
-    const handleClick = (video) => {
-        window.location.href = "watch/" + video;
-    };
-
     function Heading(string) {
         if (!string) return "";
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
-
+    const [typeShort, setType] = useState(0);
     const [data, setdata] = useState([]);
 
     const fetchData = async () => {
-        const response = await fetch("/category" + window.location.search);
+        const response = await fetch(
+            "/category" + window.location.search + "&type=" + typeShort
+        );
         const result = await response.json();
         setdata(result);
         console.log(result);
@@ -23,13 +21,40 @@ const Category = (params) => {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [typeShort]);
+
+    const handleClick = (video, isShort) => {
+        window.location.href =
+            (isShort ? "shorts?video_id=" : "shorts?video_id=") + video;
+    };
 
     return (
         <div className="categorybox">
             <div className="heading">
                 <img className="caticon" src={data.caticon} alt="category" />
                 <p className="catheading">{Heading(data.category)}</p>
+            </div>
+            <div className="menus">
+                <p
+                    className={
+                        "menubutton " + (typeShort === 0 ? "active" : "")
+                    }
+                    onClick={() => {
+                        setType(0);
+                    }}
+                >
+                    Videos
+                </p>
+                <p
+                    className={
+                        "menubutton " + (typeShort === 1 ? "active" : "")
+                    }
+                    onClick={() => {
+                        setType(1);
+                    }}
+                >
+                    Shorts
+                </p>
             </div>
             <div>
                 <hr></hr>
@@ -40,7 +65,9 @@ const Category = (params) => {
                         <Card
                             key={item.video_id}
                             data={item}
-                            onClick={() => handleClick(item.video_id)}
+                            onClick={() =>
+                                handleClick(item.video_id, item.isShort)
+                            }
                         />
                     ))}
                 </div>

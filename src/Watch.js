@@ -14,7 +14,6 @@ const Watch = (params) => {
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setData(jsonData);
-            console.log(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -76,7 +75,7 @@ const Watch = (params) => {
             {watchdata.data && data ? (
                 <div className="watchpage">
                     <div className="vplayer">
-                        <Videoplayer streamUrl={data.streamUrl} />
+                        <Videoplayer streamUrl={data.streamUrl} type="video" />
                         <div className="video_info">
                             <p className="title">{watchdata.data[0].title}</p>
                             <div className="box">

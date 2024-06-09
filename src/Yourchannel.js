@@ -55,8 +55,9 @@ const Yourchannel = (params) => {
         return number.toLocaleString();
     }
 
-    const handleClick = (video) => {
-        window.location.href = "watch/" + video;
+    const handleClick = (video, isShort) => {
+        window.location.href =
+            (isShort ? "shorts?video_id=" : "shorts?video_id=") + video;
     };
 
     function formatISODate(isoDate) {
@@ -241,7 +242,9 @@ const Yourchannel = (params) => {
                             <Card
                                 key={item.video_id}
                                 data={item}
-                                onClick={() => handleClick(item.video_id)}
+                                onClick={() =>
+                                    handleClick(item.video_id, item.isShort)
+                                }
                             />
                         ))}
                     </div>
