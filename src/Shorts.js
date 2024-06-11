@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Shortbox from "./Shortbox";
 import "./Shorts.css";
 
@@ -6,7 +6,7 @@ const Shorts = (params) => {
     const [shortdata, setShortdata] = useState([]);
     const apiUrl = process.env.SERVER_URL;
 
-    const fetchShorts = async () => {
+    const fetchShorts = useCallback(async () => {
         if (window.location.search) {
             const response = await fetch(
                 `${apiUrl}/shorts` + window.location.search
@@ -18,11 +18,11 @@ const Shorts = (params) => {
             const data = await response.json();
             setShortdata(data);
         }
-    };
+    }, [apiUrl]);
 
     useEffect(() => {
         fetchShorts();
-    }, []);
+    }, [fetchShorts]);
 
     return (
         <div className="shorts-container">

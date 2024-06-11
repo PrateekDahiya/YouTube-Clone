@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Card from "./Card";
 import "./Subscription.css";
 
@@ -6,15 +6,15 @@ const Subscription = (params) => {
     const [videos, setVideos] = useState([]);
     const apiUrl = process.env.SERVER_URL;
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         const response = await fetch(`${apiUrl}/subscriptions`);
         const result = await response.json();
         setVideos(result);
-    };
+    }, [apiUrl]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleClick = (video, isShort) => {
         window.location.href =

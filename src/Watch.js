@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Watch.css";
 import Videoplayer from "./Videoplayer";
 
@@ -9,7 +9,7 @@ const Watch = (params) => {
     const [watchdata, setwatchdata] = useState([]);
     const apiUrl = process.env.SERVER_URL;
 
-    const fetchstreamURL = async () => {
+    const fetchstreamURL = useCallback(async () => {
         try {
             const getlink = `${apiUrl}/get-stream-url` + window.location.search;
             const response = await fetch(getlink);
@@ -18,9 +18,9 @@ const Watch = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl]);
 
-    const fetchwatchdata = async () => {
+    const fetchwatchdata = useCallback(async () => {
         try {
             const getlink = `${apiUrl}/watch` + window.location.search;
             const response = await fetch(getlink);
@@ -29,7 +29,7 @@ const Watch = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl]);
 
     const handlesubclick = async () => {
         if (subs === "Subscribe") {
@@ -64,12 +64,12 @@ const Watch = (params) => {
             params.onClick();
             i++;
         }
-    }, [i, params]);
+    }, [fetchstreamURL, i, params]);
 
     useEffect(() => {
         fetchwatchdata();
         params.onClick();
-    }, [params]);
+    }, [fetchwatchdata, params]);
 
     return (
         <>

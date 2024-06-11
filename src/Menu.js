@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Menuitem from "./Menuitem";
 import "./Menu.css";
 
@@ -7,7 +7,7 @@ function Menu(params) {
     const [selectedItem, setSelectedItem] = useState(null);
     const apiUrl = process.env.SERVER_URL;
 
-    const fetchsubs = async () => {
+    const fetchsubs = useCallback(async () => {
         try {
             const getlink = `${apiUrl}/get-subs/UC0fcwXT_xgCBUuuczF-imLQ`;
             const response = await fetch(getlink);
@@ -16,11 +16,11 @@ function Menu(params) {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl]);
 
     useEffect(() => {
         fetchsubs();
-    }, []);
+    }, [fetchsubs]);
 
     const handleItemClick = (title) => {
         setSelectedItem(title);

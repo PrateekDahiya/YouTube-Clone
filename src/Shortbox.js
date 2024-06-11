@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Shortbox.css";
 import Videoplayer from "./Videoplayer";
 
@@ -17,7 +17,7 @@ const Shortbox = (params) => {
     const [shorts, setShorts] = useState([]);
     const apiUrl = process.env.SERVER_URL;
 
-    const fetchstreamURL = async () => {
+    const fetchstreamURL = useCallback(async () => {
         try {
             const getlink =
                 `${apiUrl}/get-stream-url?video_id=` +
@@ -28,10 +28,10 @@ const Shortbox = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl, shorts.video]);
     let crntshort = 1;
 
-    const fetchShorts = async () => {
+    const fetchShorts = useCallback(async () => {
         try {
             const response = await fetch(
                 `${apiUrl}/getvideobyid?video_id=` +
@@ -42,15 +42,15 @@ const Shortbox = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl, crntshort, params.data.shorts_vIds]);
 
     useEffect(() => {
         fetchShorts();
-    }, []);
+    }, [fetchShorts]);
 
     useEffect(() => {
         fetchstreamURL();
-    }, []);
+    }, [fetchstreamURL]);
 
     return (
         <>
