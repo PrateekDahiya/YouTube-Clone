@@ -5,18 +5,17 @@ import "./Menu.css";
 function Menu(params) {
     const [subsdata, setsubsData] = useState("");
     const [selectedItem, setSelectedItem] = useState(null);
-    const apiUrl = process.env.SERVER_URL;
 
     const fetchsubs = useCallback(async () => {
         try {
-            const getlink = `${apiUrl}/get-subs/UC0fcwXT_xgCBUuuczF-imLQ`;
+            const getlink = `/get-subs/UC0fcwXT_xgCBUuuczF-imLQ`;
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setsubsData(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl]);
+    }, []);
 
     useEffect(() => {
         fetchsubs();

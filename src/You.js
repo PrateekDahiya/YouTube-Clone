@@ -5,20 +5,17 @@ const You = (params) => {
     const [data, setData] = useState("");
     // const [videos, setVideos] = useState("");
     // const [typeShort, setType] = useState(0);
-    const apiUrl = process.env.SERVER_URL;
 
     const fetchData = useCallback(async () => {
         try {
-            let getreq =
-                `${apiUrl}/yourchannel` +
-                "?channel_id=UC0fcwXT_xgCBUuuczF-imLQ";
+            let getreq = `/yourchannel?channel_id=UC0fcwXT_xgCBUuuczF-imLQ`;
             const response = await fetch(getreq);
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl]);
+    }, []);
 
     useEffect(() => {
         fetchData();

@@ -15,26 +15,23 @@ const Shortbox = (params) => {
 
     const [data, setData] = useState("");
     const [shorts, setShorts] = useState([]);
-    const apiUrl = process.env.SERVER_URL;
-
     const fetchstreamURL = useCallback(async () => {
         try {
             const getlink =
-                `${apiUrl}/get-stream-url?video_id=` +
-                (await shorts.video[0].video_id);
+                `/get-stream-url?video_id=` + (await shorts.video[0].video_id);
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl, shorts.video]);
+    }, [shorts.video]);
     let crntshort = 1;
 
     const fetchShorts = useCallback(async () => {
         try {
             const response = await fetch(
-                `${apiUrl}/getvideobyid?video_id=` +
+                `/getvideobyid?video_id=` +
                     params.data.shorts_vIds[crntshort].video_id
             );
             const jsonData = await response.json();
@@ -42,7 +39,7 @@ const Shortbox = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl, crntshort, params.data.shorts_vIds]);
+    }, [crntshort, params.data.shorts_vIds]);
 
     useEffect(() => {
         fetchShorts();

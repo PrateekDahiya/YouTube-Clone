@@ -3,18 +3,16 @@ import Card from "./Card";
 import "./Home.css";
 
 const Home = (params) => {
-    const apiUrl = process.env.SERVER_URL;
-
     const [data, setData] = useState("");
     const fetchData = useCallback(async () => {
         try {
-            const response = await fetch(`${apiUrl}/home`);
+            const response = await fetch(`/home`);
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl]);
+    }, []);
 
     useEffect(() => {
         fetchData();

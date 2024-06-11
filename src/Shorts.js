@@ -4,13 +4,10 @@ import "./Shorts.css";
 
 const Shorts = (params) => {
     const [shortdata, setShortdata] = useState([]);
-    const apiUrl = process.env.SERVER_URL;
 
     const fetchShorts = useCallback(async () => {
         if (window.location.search) {
-            const response = await fetch(
-                `${apiUrl}/shorts` + window.location.search
-            );
+            const response = await fetch(`/shorts` + window.location.search);
             const data = await response.json();
             setShortdata(data);
         } else {
@@ -18,7 +15,7 @@ const Shorts = (params) => {
             const data = await response.json();
             setShortdata(data);
         }
-    }, [apiUrl]);
+    }, []);
 
     useEffect(() => {
         fetchShorts();
