@@ -5,10 +5,11 @@ import "./Menu.css";
 function Menu(params) {
     const [subsdata, setsubsData] = useState("");
     const [selectedItem, setSelectedItem] = useState(null);
+    const apiUrl = process.env.SERVER_URL;
 
     const fetchsubs = async () => {
         try {
-            const getlink = "/get-subs/UC0fcwXT_xgCBUuuczF-imLQ";
+            const getlink = `${apiUrl}/get-subs/UC0fcwXT_xgCBUuuczF-imLQ`;
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setsubsData(jsonData);

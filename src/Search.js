@@ -4,9 +4,10 @@ import "./Search.css";
 
 const Search = () => {
     const [data, setData] = useState("");
+    const apiUrl = process.env.SERVER_URL;
     const fetchData = async () => {
         try {
-            const getreq = "/search" + window.location.search;
+            const getreq = `${apiUrl}/search` + window.location.search;
             const response = await fetch(getreq);
             const jsonData = await response.json();
             setData(jsonData);

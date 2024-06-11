@@ -6,10 +6,11 @@ const Yourchannel = (params) => {
     const [data, setData] = useState("");
     const [videos, setVideos] = useState("");
     const [typeShort, setType] = useState(0);
+    const apiUrl = process.env.SERVER_URL;
 
     const fetchData = async () => {
         try {
-            let getreq = "/yourchannel" + window.location.search;
+            let getreq = `${apiUrl}/yourchannel` + window.location.search;
             const response = await fetch(getreq);
             const jsonData = await response.json();
             setData(jsonData);
@@ -21,7 +22,7 @@ const Yourchannel = (params) => {
     const fetchVideos = async () => {
         try {
             let getreq =
-                "/getvideosofchannel" +
+                `${apiUrl}/getvideosofchannel` +
                 window.location.search +
                 "&type=" +
                 typeShort;

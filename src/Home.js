@@ -3,10 +3,12 @@ import Card from "./Card";
 import "./Home.css";
 
 const Home = (params) => {
+    const apiUrl = process.env.SERVER_URL;
+
     const [data, setData] = useState("");
     const fetchData = async () => {
         try {
-            const response = await fetch("/home");
+            const response = await fetch(`${apiUrl}/home`);
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
