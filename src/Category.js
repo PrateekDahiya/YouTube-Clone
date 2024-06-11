@@ -3,8 +3,6 @@ import Card from "./Card";
 import "./Category.css";
 
 const Category = (params) => {
-    const apiUrl = process.env.SERVER_URL;
-
     function Heading(string) {
         if (!string) return "";
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -14,12 +12,12 @@ const Category = (params) => {
 
     const fetchData = useCallback(async () => {
         const response = await fetch(
-            `${apiUrl}/category` + window.location.search + "&type=" + typeShort
+            `/category` + window.location.search + "&type=" + typeShort
         );
         const result = await response.json();
         setdata(result);
         console.log(result);
-    }, [apiUrl, typeShort]);
+    }, [typeShort]);
 
     useEffect(() => {
         fetchData();

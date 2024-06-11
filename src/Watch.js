@@ -7,29 +7,28 @@ const Watch = (params) => {
     const [subs, setSubs] = useState("Subscribe");
     const [likestate, setlike] = useState("");
     const [watchdata, setwatchdata] = useState([]);
-    const apiUrl = process.env.SERVER_URL;
 
     const fetchstreamURL = useCallback(async () => {
         try {
-            const getlink = `${apiUrl}/get-stream-url` + window.location.search;
+            const getlink = `/get-stream-url` + window.location.search;
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl]);
+    }, []);
 
     const fetchwatchdata = useCallback(async () => {
         try {
-            const getlink = `${apiUrl}/watch` + window.location.search;
+            const getlink = `/watch` + window.location.search;
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setwatchdata(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl]);
+    }, []);
 
     const handlesubclick = async () => {
         if (subs === "Subscribe") {

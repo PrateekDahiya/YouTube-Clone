@@ -6,23 +6,22 @@ const Yourchannel = (params) => {
     const [data, setData] = useState("");
     const [videos, setVideos] = useState("");
     const [typeShort, setType] = useState(0);
-    const apiUrl = process.env.SERVER_URL;
 
     const fetchData = useCallback(async () => {
         try {
-            let getreq = `${apiUrl}/yourchannel` + window.location.search;
+            let getreq = `/yourchannel` + window.location.search;
             const response = await fetch(getreq);
             const jsonData = await response.json();
             setData(jsonData);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [apiUrl]);
+    }, []);
 
     const fetchVideos = useCallback(async () => {
         try {
             let getreq =
-                `${apiUrl}/getvideosofchannel` +
+                `/getvideosofchannel` +
                 window.location.search +
                 "&type=" +
                 typeShort;
@@ -32,7 +31,7 @@ const Yourchannel = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [typeShort, apiUrl]);
+    }, [typeShort]);
 
     useEffect(() => {
         fetchData();
