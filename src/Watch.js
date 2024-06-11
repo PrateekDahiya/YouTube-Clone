@@ -7,10 +7,11 @@ const Watch = (params) => {
     const [subs, setSubs] = useState("Subscribe");
     const [likestate, setlike] = useState("");
     const [watchdata, setwatchdata] = useState([]);
+    const apiUrl = process.env.SERVER_URL;
 
     const fetchstreamURL = async () => {
         try {
-            const getlink = "/get-stream-url" + window.location.search;
+            const getlink = `${apiUrl}/get-stream-url` + window.location.search;
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setData(jsonData);
@@ -21,7 +22,7 @@ const Watch = (params) => {
 
     const fetchwatchdata = async () => {
         try {
-            const getlink = "/watch" + window.location.search;
+            const getlink = `${apiUrl}/watch` + window.location.search;
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setwatchdata(jsonData);

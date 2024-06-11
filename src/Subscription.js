@@ -4,9 +4,10 @@ import "./Subscription.css";
 
 const Subscription = (params) => {
     const [videos, setVideos] = useState([]);
+    const apiUrl = process.env.SERVER_URL;
 
     const fetchData = async () => {
-        const response = await fetch("/subscriptions");
+        const response = await fetch(`${apiUrl}/subscriptions`);
         const result = await response.json();
         setVideos(result);
     };

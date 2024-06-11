@@ -15,11 +15,13 @@ const Shortbox = (params) => {
 
     const [data, setData] = useState("");
     const [shorts, setShorts] = useState([]);
+    const apiUrl = process.env.SERVER_URL;
 
     const fetchstreamURL = async () => {
         try {
             const getlink =
-                "/get-stream-url?video_id=" + (await shorts.video[0].video_id);
+                `${apiUrl}/get-stream-url?video_id=` +
+                (await shorts.video[0].video_id);
             const response = await fetch(getlink);
             const jsonData = await response.json();
             setData(jsonData);
@@ -32,7 +34,7 @@ const Shortbox = (params) => {
     const fetchShorts = async () => {
         try {
             const response = await fetch(
-                "/getvideobyid?video_id=" +
+                `${apiUrl}/getvideobyid?video_id=` +
                     params.data.shorts_vIds[crntshort].video_id
             );
             const jsonData = await response.json();
