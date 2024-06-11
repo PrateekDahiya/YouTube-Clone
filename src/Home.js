@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Card from "./Card";
 import "./Home.css";
 
@@ -6,7 +6,7 @@ const Home = (params) => {
     const apiUrl = process.env.SERVER_URL;
 
     const [data, setData] = useState("");
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const response = await fetch(`${apiUrl}/home`);
             const jsonData = await response.json();
@@ -14,11 +14,11 @@ const Home = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleClick = (video, isShort) => {
         window.location.href =

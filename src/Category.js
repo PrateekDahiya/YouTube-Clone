@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Card from "./Card";
 import "./Category.css";
 
@@ -12,18 +12,18 @@ const Category = (params) => {
     const [typeShort, setType] = useState(0);
     const [data, setdata] = useState([]);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         const response = await fetch(
             `${apiUrl}/category` + window.location.search + "&type=" + typeShort
         );
         const result = await response.json();
         setdata(result);
         console.log(result);
-    };
+    }, [apiUrl, typeShort]);
 
     useEffect(() => {
         fetchData();
-    }, [typeShort]);
+    }, [fetchData, typeShort]);
 
     const handleClick = (video, isShort) => {
         window.location.href =

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./Yourchannel.css";
 import Card from "./Card";
 
@@ -8,7 +8,7 @@ const Yourchannel = (params) => {
     const [typeShort, setType] = useState(0);
     const apiUrl = process.env.SERVER_URL;
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             let getreq = `${apiUrl}/yourchannel` + window.location.search;
             const response = await fetch(getreq);
@@ -17,9 +17,9 @@ const Yourchannel = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl]);
 
-    const fetchVideos = async () => {
+    const fetchVideos = useCallback(async () => {
         try {
             let getreq =
                 `${apiUrl}/getvideosofchannel` +
@@ -32,15 +32,15 @@ const Yourchannel = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [typeShort, apiUrl]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     useEffect(() => {
         fetchVideos();
-    }, [typeShort]);
+    }, [fetchVideos, typeShort]);
 
     function formatNumber(num) {
         if (num >= 1000000) {

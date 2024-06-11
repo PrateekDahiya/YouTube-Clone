@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Card from "./Card";
 import "./Search.css";
 
 const Search = () => {
     const [data, setData] = useState("");
     const apiUrl = process.env.SERVER_URL;
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const getreq = `${apiUrl}/search` + window.location.search;
             const response = await fetch(getreq);
@@ -14,11 +14,11 @@ const Search = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleClick = (video) => {
         window.location.href = "watch?video_id=" + video;

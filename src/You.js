@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./You.css";
 
 const You = (params) => {
     const [data, setData] = useState("");
-    const [videos, setVideos] = useState("");
-    const [typeShort, setType] = useState(0);
+    // const [videos, setVideos] = useState("");
+    // const [typeShort, setType] = useState(0);
     const apiUrl = process.env.SERVER_URL;
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             let getreq =
                 `${apiUrl}/yourchannel` +
@@ -18,11 +18,11 @@ const You = (params) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    };
+    }, [apiUrl]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     // function formatNumber(num) {
     //     if (num >= 1000000) {
