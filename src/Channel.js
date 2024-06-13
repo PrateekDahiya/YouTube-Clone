@@ -1,43 +1,51 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import "./Channel.css";
 import Card from "./Card";
 
 const Channel = (params) => {
     const [data, setData] = useState("");
     const [videos, setVideos] = useState("");
+    const [query, setQuery] = useState("");
     const [typeShort, setType] = useState(0);
-    const apiUrl = process.env.SERVER_URL;
-
-    const fetchData = useCallback(async () => {
-        try {
-            let getreq = `${apiUrl}/channel` + window.location.search;
-            const response = await fetch(getreq);
-            const jsonData = await response.json();
-            setData(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [apiUrl]);
-
-    const fetchVideos = useCallback(async () => {
-        try {
-            let getreq =
-                `${apiUrl}/getvideosofchannel` +
-                window.location.search +
-                "&type=" +
-                typeShort;
-            const response = await fetch(getreq);
-            const jsonData = await response.json();
-            setVideos(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [apiUrl, typeShort]);
+    const [refresh, setrefresh] = useState(0);
 
     useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let getreq = `/channel` + window.location.search;
+                const response = await fetch(getreq);
+                const jsonData = await response.json();
+                setData(jsonData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
         fetchData();
+    }, [typeShort]);
+
+    function refreshdata() {
+        setrefresh(refresh + 1);
+    }
+
+    useEffect(() => {
+        const fetchVideos = async () => {
+            try {
+                let getreq =
+                    `/getvideosofchannel` +
+                    window.location.search +
+                    "&type=" +
+                    typeShort +
+                    "&query=" +
+                    query;
+                const response = await fetch(getreq);
+                const jsonData = await response.json();
+                setVideos(jsonData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
         fetchVideos();
-    }, [fetchData, fetchVideos, typeShort]);
+    }, [typeShort, refresh]);
 
     function formatNumber(num) {
         if (num >= 1000000) {
@@ -61,9 +69,9 @@ const Channel = (params) => {
         return number.toLocaleString();
     }
 
-    const handleClick = (video, isShort) => {
+    const handleClick = async (video, isShort) => {
         window.location.href =
-            (isShort ? "shorts?video_id=" : "shorts?video_id=") + video;
+            ((await isShort) ? "shorts?video_id=" : "watch?video_id=") + video;
     };
 
     function formatISODate(isoDate) {
@@ -229,11 +237,25 @@ const Channel = (params) => {
                             Shorts
                         </p>
                         <p className="menubutton">Search Channel</p>
-                        <input type="text" placeholder="Search" />
-                        <img
-                            alt="searchchannel"
-                            src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
+
+                        <input
+                            type="text"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder="Search"
+                            className="channelsearch"
                         />
+                        <button
+                            onClick={() => {
+                                refreshdata();
+                            }}
+                            className="chlsearchbtn"
+                        >
+                            <img
+                                alt="searchchannel"
+                                src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
+                            />
+                        </button>
                     </div>
                     <div className="videos">
                         {videos.videos.map((item) => (
