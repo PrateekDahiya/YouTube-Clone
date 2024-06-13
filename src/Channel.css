@@ -159,13 +159,6 @@
     border-bottom: 1px solid var(--text-color);
 }
 
-.menus img {
-    width: 22px;
-    height: 22px;
-    filter: var(--image-filter);
-    margin: 14px;
-}
-
 .menus input {
     background-color: var(--alt-color);
     border: none;
@@ -186,4 +179,24 @@
     width: 100%;
     display: flex;
     flex-wrap: wrap;
+}
+
+.chlsearchbtn {
+    background-color: var(--alt-color);
+    border: none;
+    border-radius: 20px;
+    height: 24px;
+    width: 40px;
+    margin-top: 14px;
+    margin-left: 5px;
+}
+
+.chlsearchbtn img {
+    margin: 0;
+    width: 20px;
+    filter: var(--image-filter);
+}
+
+.chlsearchbtn:hover {
+    background-color: var(--text2-color);
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "./Shortbox.css";
 import Videoplayer from "./Videoplayer";
 
@@ -15,43 +15,48 @@ const Shortbox = (params) => {
 
     const [data, setData] = useState("");
     const [shorts, setShorts] = useState([]);
-    const fetchstreamURL = useCallback(async () => {
-        try {
-            const getlink =
-                `/get-stream-url?video_id=` + (await shorts.video[0].video_id);
-            const response = await fetch(getlink);
-            const jsonData = await response.json();
-            setData(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [shorts.video]);
-    let crntshort = 1;
 
-    const fetchShorts = useCallback(async () => {
-        try {
-            const response = await fetch(
-                `/getvideobyid?video_id=` +
-                    params.data.shorts_vIds[crntshort].video_id
-            );
-            const jsonData = await response.json();
-            setShorts(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+    let crntshort = 4;
+
+    useEffect(() => {
+        const fetchShorts = async () => {
+            try {
+                const response = await fetch(
+                    `/getvideobyid?video_id=` +
+                        (await params.data.shorts_vIds[crntshort].video_id)
+                );
+                const jsonData = await response.json();
+                setShorts(jsonData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchShorts();
     }, [crntshort, params.data.shorts_vIds]);
 
+    const [i, seti] = useState(true);
     useEffect(() => {
-        fetchShorts();
-    }, [fetchShorts]);
-
-    useEffect(() => {
-        fetchstreamURL();
-    }, [fetchstreamURL]);
+        if (i === true && shorts.video) {
+            const fetchstreamURL = async () => {
+                try {
+                    const getlink =
+                        `/get-stream-url?video_id=` +
+                        (await shorts.video[0].video_id);
+                    const response = await fetch(getlink);
+                    const jsonData = await response.json();
+                    setData(jsonData);
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            fetchstreamURL();
+            seti(false);
+        }
+    }, [i, shorts.video]);
 
     return (
         <>
-            {shorts.video ? (
+            {data ? (
                 <div className="shortsbox">
                     <Videoplayer type="short" streamUrl={data.streamUrl} />
                     <div className="short-btns">
@@ -104,7 +109,7 @@ const Shortbox = (params) => {
                     </div>
                 </div>
             ) : (
-                <h1>Loading...</h1>
+                <p></p>
             )}
         </>
     );

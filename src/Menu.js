@@ -144,7 +144,7 @@ function Menu(params) {
                                 />
                             ))
                         ) : (
-                            <p>None</p>
+                            <h1>Loading...</h1>
                         )}
                     </div>
                     <div className="menudiv">

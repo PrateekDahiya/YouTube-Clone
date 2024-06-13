@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "./Watch.css";
 import Videoplayer from "./Videoplayer";
 
@@ -7,28 +7,6 @@ const Watch = (params) => {
     const [subs, setSubs] = useState("Subscribe");
     const [likestate, setlike] = useState("");
     const [watchdata, setwatchdata] = useState([]);
-
-    const fetchstreamURL = useCallback(async () => {
-        try {
-            const getlink = `/get-stream-url` + window.location.search;
-            const response = await fetch(getlink);
-            const jsonData = await response.json();
-            setData(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, []);
-
-    const fetchwatchdata = useCallback(async () => {
-        try {
-            const getlink = `/watch` + window.location.search;
-            const response = await fetch(getlink);
-            const jsonData = await response.json();
-            setwatchdata(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, []);
 
     const handlesubclick = async () => {
         if (subs === "Subscribe") {
@@ -56,24 +34,47 @@ const Watch = (params) => {
             return num.toString();
         }
     }
-    let i = 0;
+    const [i, seti] = useState(true);
     useEffect(() => {
-        if (i === 0) {
+        if (i === true) {
+            const fetchstreamURL = async () => {
+                try {
+                    const getlink = `/get-stream-url` + window.location.search;
+                    const response = await fetch(getlink);
+                    const jsonData = await response.json();
+                    setData(jsonData);
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
             fetchstreamURL();
-            params.onClick();
-            i++;
+            seti(false);
         }
-    }, [fetchstreamURL, i, params]);
+    }, [i]);
 
     useEffect(() => {
+        const fetchwatchdata = async () => {
+            try {
+                const getlink = `/watch` + window.location.search;
+                const response = await fetch(getlink);
+                const jsonData = await response.json();
+                setwatchdata(jsonData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
         fetchwatchdata();
-        params.onClick();
-    }, [fetchwatchdata, params]);
+    }, []);
 
     return (
         <>
-            {watchdata.data && data ? (
-                <div className="watchpage">
+            {data ? (
+                <div
+                    className="watchpage"
+                    onLoad={() => {
+                        params.onClick();
+                    }}
+                >
                     <div className="vplayer">
                         <Videoplayer streamUrl={data.streamUrl} type="video" />
                         <div className="video_info">

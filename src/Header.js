@@ -45,7 +45,6 @@ const Header = (params) => {
                     className="search"
                 />
                 <button
-                    type="submit"
                     className="searchbutton"
                     onClick={() => {
                         window.location.href = "/search?query=" + query;

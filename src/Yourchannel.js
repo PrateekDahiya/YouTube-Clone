@@ -55,9 +55,9 @@ const Yourchannel = (params) => {
         return number.toLocaleString();
     }
 
-    const handleClick = (video, isShort) => {
+    const handleClick = async (video, isShort) => {
         window.location.href =
-            (isShort ? "shorts?video_id=" : "shorts?video_id=") + video;
+            ((await isShort) ? "shorts?video_id=" : "watch?video_id=") + video;
     };
 
     function formatISODate(isoDate) {

@@ -1,23 +1,22 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import "./Subscription.css";
 
 const Subscription = (params) => {
     const [videos, setVideos] = useState([]);
 
-    const fetchData = useCallback(async () => {
-        const response = await fetch(`/subscriptions`);
-        const result = await response.json();
-        setVideos(result);
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await fetch(`/subscriptions`);
+            const result = await response.json();
+            setVideos(result);
+        };
+        fetchData();
     }, []);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    const handleClick = (video, isShort) => {
+    const handleClick = async (video, isShort) => {
         window.location.href =
-            (isShort ? "shorts?video_id=" : "shorts?video_id=") + video;
+            ((await isShort) ? "shorts?video_id=" : "watch?video_id=") + video;
     };
     return (
         <div className="subsbox">
