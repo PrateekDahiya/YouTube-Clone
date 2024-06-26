@@ -13,7 +13,7 @@
     display: flex;
     flex-direction: column;
     height: 91vh;
-    width: 90%;
+    width: 100%;
     overflow-y: scroll;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .categorybox::-webkit-scrollbar-thumb:hover {
-    background: var(--text-color);
+    background: var(--text2-color);
 }
 
 .caticon {
@@ -42,12 +42,8 @@
     margin: 10px;
 }
 
-.catvideos {
-    flex: 1;
-    height: 80vh;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+.line {
+    margin: 0;
 }
 
 .menubutton {

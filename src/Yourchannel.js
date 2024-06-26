@@ -1,45 +1,49 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import "./Yourchannel.css";
+import Cookies from "js-cookie";
+import axios from "axios";
+import Cardloading from "./Cardloading";
 import Card from "./Card";
 
 const Yourchannel = (params) => {
     const [data, setData] = useState("");
     const [videos, setVideos] = useState("");
     const [typeShort, setType] = useState(0);
+    const serverurl = process.env.REACT_APP_SERVER_URL;
+    const user_channel_id = Cookies.get("channel_id");
 
-    const fetchData = useCallback(async () => {
-        try {
-            let getreq = `/yourchannel` + window.location.search;
-            const response = await fetch(getreq);
-            const jsonData = await response.json();
-            setData(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let getreq = `${serverurl}/yourchannel?channel_id=${user_channel_id}`;
+                const response = await fetch(getreq);
+                const jsonData = await response.json();
+                setData(jsonData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
     }, []);
 
-    const fetchVideos = useCallback(async () => {
-        try {
-            let getreq =
-                `/getvideosofchannel` +
-                window.location.search +
-                "&type=" +
-                typeShort;
-            const response = await fetch(getreq);
-            const jsonData = await response.json();
-            setVideos(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [typeShort]);
-
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    useEffect(() => {
+        const fetchVideos = async () => {
+            await axios
+                .get(
+                    `${serverurl}/getvideosofchannel` +
+                        window.location.search +
+                        "&type=" +
+                        typeShort
+                )
+                .then((response) => {
+                    setVideos(response.data);
+                })
+                .catch((error) => {
+                    console.log("Error in fetching: ", error.message);
+                });
+        };
         fetchVideos();
-    }, [fetchVideos, typeShort]);
+    }, [typeShort]);
 
     function formatNumber(num) {
         if (num >= 1000000) {
@@ -54,11 +58,6 @@ const Yourchannel = (params) => {
     function formatNumberWithCommas(number) {
         return number.toLocaleString();
     }
-
-    const handleClick = async (video, isShort) => {
-        window.location.href =
-            ((await isShort) ? "shorts?video_id=" : "watch?video_id=") + video;
-    };
 
     function formatISODate(isoDate) {
         const date = new Date(isoDate);
@@ -93,7 +92,7 @@ const Yourchannel = (params) => {
 
     return (
         <>
-            {data.channel && videos.videos ? (
+            {data.channel ? (
                 <div className="outer">
                     {data.channel[0].channel_banner !== "N/A" ? (
                         <div className="banner">
@@ -201,10 +200,6 @@ const Yourchannel = (params) => {
                                     {data.channel[0].location}
                                 </p>
                             </div>
-                            <div className="subbuttons">
-                                <button className="subscribe">Subscribe</button>
-                                <button className="join">Join</button>
-                            </div>
                         </div>
                     </div>
                     <div className="menus">
@@ -237,20 +232,18 @@ const Yourchannel = (params) => {
                             src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
                         />
                     </div>
-                    <div className="videos">
-                        {videos.videos.map((item) => (
-                            <Card
-                                key={item.video_id}
-                                data={item}
-                                onClick={() =>
-                                    handleClick(item.video_id, item.isShort)
-                                }
-                            />
-                        ))}
-                    </div>
+                    {videos.data ? (
+                        <div className="videos">
+                            {videos.videos.map((item) => (
+                                <Card key={item.video_id} data={item} />
+                            ))}
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                 </div>
             ) : (
-                <p>loading...</p>
+                <Cardloading page="yourchannel" />
             )}
         </>
     );

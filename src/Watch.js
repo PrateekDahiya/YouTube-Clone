@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./Watch.css";
+import axios from "axios";
 import Videoplayer from "./Videoplayer";
+import Cardloading from "./Cardloading";
 
 const Watch = (params) => {
     const [data, setData] = useState("");
     const [subs, setSubs] = useState("Subscribe");
     const [likestate, setlike] = useState("");
     const [watchdata, setwatchdata] = useState([]);
+    const serverurl = process.env.REACT_APP_SERVER_URL;
 
     const handlesubclick = async () => {
         if (subs === "Subscribe") {
@@ -38,15 +41,16 @@ const Watch = (params) => {
     useEffect(() => {
         if (i === true) {
             const fetchstreamURL = async () => {
-                try {
-                    const getlink = `/get-stream-url` + window.location.search;
-                    const response = await fetch(getlink);
-                    const jsonData = await response.json();
-                    setData(jsonData);
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                }
+                await axios
+                    .get(`${serverurl}/get-stream-url` + window.location.search)
+                    .then((response) => {
+                        setData(response.data);
+                    })
+                    .catch((error) => {
+                        console.log("Error in fetching: ", error.message);
+                    });
             };
+            params.onClick("hidden");
             fetchstreamURL();
             seti(false);
         }
@@ -54,29 +58,30 @@ const Watch = (params) => {
 
     useEffect(() => {
         const fetchwatchdata = async () => {
-            try {
-                const getlink = `/watch` + window.location.search;
-                const response = await fetch(getlink);
-                const jsonData = await response.json();
-                setwatchdata(jsonData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+            await axios
+                .get(`${serverurl}/watch` + window.location.search)
+                .then((response) => {
+                    setwatchdata(response.data);
+                })
+                .catch((error) => {
+                    console.log("Error in fetching: ", error.message);
+                });
         };
         fetchwatchdata();
     }, []);
 
     return (
         <>
-            {data ? (
-                <div
-                    className="watchpage"
-                    onLoad={() => {
-                        params.onClick();
-                    }}
-                >
+            {watchdata.data ? (
+                <div className="watchpage">
                     <div className="vplayer">
-                        <Videoplayer streamUrl={data.streamUrl} type="video" />
+                        <div className="video-player">
+                            <Videoplayer
+                                streamUrl={data ? data.streamUrl : ""}
+                                type="video"
+                            />
+                        </div>
+
                         <div className="video_info">
                             <p className="title">{watchdata.data[0].title}</p>
                             <div className="box">
@@ -156,7 +161,7 @@ const Watch = (params) => {
                     <div className="relatedvideos"></div>
                 </div>
             ) : (
-                <h1>Loading...</h1>
+                <Cardloading page="watch" />
             )}
         </>
     );
