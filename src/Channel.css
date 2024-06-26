@@ -1,10 +1,10 @@
 .outer {
     height: 91vh;
-    width: 170vh;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
-    margin-left: 100px;
+    /* margin-left: 50px; */
 }
 
 .outer::-webkit-scrollbar {
@@ -22,7 +22,7 @@
 }
 
 .outer::-webkit-scrollbar-thumb:hover {
-    background: var(--text-color);
+    background: var(--text2-color);
 }
 
 .channelinfo {
@@ -174,11 +174,13 @@
 }
 
 .videos {
-    flex: 1;
     height: 91vh;
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
+    overflow-y: visible;
+    display: grid;
+    grid-template-columns: repeat(3, 32%);
+    gap: 10px;
+    align-items: center;
 }
 
 .chlsearchbtn {

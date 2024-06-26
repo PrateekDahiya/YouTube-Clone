@@ -1,25 +1,86 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 import Menuitem from "./Menuitem";
+import axios from "axios";
 import "./Menu.css";
 
 function Menu(params) {
+    const locationHook = useLocation();
     const [subsdata, setsubsData] = useState("");
     const [selectedItem, setSelectedItem] = useState(null);
-
-    const fetchsubs = useCallback(async () => {
-        try {
-            const getlink = `/get-subs/UC0fcwXT_xgCBUuuczF-imLQ`;
-            const response = await fetch(getlink);
-            const jsonData = await response.json();
-            setsubsData(jsonData);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, []);
+    const serverurl = process.env.REACT_APP_SERVER_URL;
+    const [menu, setMenu] = useState("Full");
+    const [page, setPage] = useState(locationHook.pathname);
+    const user_channel_id = Cookies.get("channel_id");
+    useEffect(() => {
+        const currentpage = locationHook.pathname;
+        setPage(currentpage);
+    }, [locationHook]);
 
     useEffect(() => {
+        if (page === "/login" || page === "/watch") {
+            setMenu("Hidden");
+        } else {
+            setMenu("Full");
+        }
+    }, [page]);
+
+    useEffect(() => {
+        if (params.menu === "hidden") {
+            setMenu("Hidden");
+        } else if (params.menu === "full") {
+            setMenu("Full");
+        } else if (params.menu === "narrow") {
+            setMenu("Narrow");
+        } else if (params.menu === "toggle2") {
+            if (menu === "Hidden" || menu === "Narrow") {
+                setMenu("Full");
+            } else if (menu === "Full") {
+                setMenu("Hidden");
+            }
+        } else if (params.menu === "toggle1") {
+            if (menu === "Hidden" || menu === "Narrow") {
+                setMenu("Full");
+            } else if (menu === "Full") {
+                setMenu("Narrow");
+            }
+        }
+    }, [params.menu, params.togglecount]);
+
+    useEffect(() => {
+        if (menu === "Full") {
+            const cardElements = document.querySelectorAll(".cards.wider");
+            cardElements.forEach((element) => {
+                element.className = "cards";
+            });
+        } else if (menu === "Narrow") {
+            const cardElements = document.querySelectorAll(".cards");
+            cardElements.forEach((element) => {
+                element.className = "cards wider";
+            });
+        } else if (menu === "Hidden") {
+            const cardElements = document.querySelectorAll(".cards");
+            cardElements.forEach((element) => {
+                element.className = "cards wider";
+            });
+        }
+    }, [menu]);
+
+    useEffect(() => {
+        const fetchsubs = async () => {
+            await axios
+                .get(`${serverurl}/get-subs/${user_channel_id}`)
+                .then((response) => {
+                    setsubsData(response.data);
+                })
+                .catch((error) => {
+                    console.log("Error in fetching: ", error.message);
+                });
+        };
         fetchsubs();
-    }, [fetchsubs]);
+    }, []);
 
     const handleItemClick = (title) => {
         setSelectedItem(title);
@@ -27,7 +88,7 @@ function Menu(params) {
 
     return (
         <div className="Menu">
-            {params.menuStyle === "Hidden" ? (
+            {menu === "Narrow" ? (
                 <div className="HiddenMenu">
                     <Menuitem
                         imgpath="https://cdn-icons-png.flaticon.com/128/1946/1946436.png"
@@ -35,15 +96,23 @@ function Menu(params) {
                         head="/home"
                         menu="Hidden"
                         isSelected={selectedItem === "Home"}
-                        // onClick={() => handleItemClick("Home")}
+                        onClick={() => handleItemClick("Home")}
+                    />
+                    <Menuitem
+                        imgpath="https://cdn-icons-png.flaticon.com/128/7264/7264012.png"
+                        title="Shorts"
+                        head="/shorts"
+                        menu="Hidden"
+                        isSelected={selectedItem === "Shorts"}
+                        onClick={() => handleItemClick("Shorts")}
                     />
                     <Menuitem
                         imgpath="https://cdn-icons-png.flaticon.com/128/2989/2989849.png"
                         title="Subs"
-                        head="/subscriptions/UC0fcwXT_xgCBUuuczF-imLQ"
+                        head="/subscriptions"
                         menu="Hidden"
-                        isSelected={selectedItem === "Subs"}
-                        onClick={() => handleItemClick("Subs")}
+                        isSelected={selectedItem === "Subscriptions"}
+                        onClick={() => handleItemClick("Subscriptions")}
                     />
                     <Menuitem
                         imgpath="https://cdn-icons-png.flaticon.com/128/456/456212.png"
@@ -54,6 +123,8 @@ function Menu(params) {
                         onClick={() => handleItemClick("You")}
                     />
                 </div>
+            ) : menu === "Hidden" ? (
+                <></>
             ) : (
                 <div className="fullMenu">
                     <div className="menudiv">
@@ -69,7 +140,7 @@ function Menu(params) {
                             title="Shorts"
                             head="/shorts"
                             isSelected={selectedItem === "Shorts"}
-                            onClick={() => handleItemClick("Home")}
+                            onClick={() => handleItemClick("Shorts")}
                         />
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/2989/2989849.png"
@@ -83,16 +154,21 @@ function Menu(params) {
                         <Menuitem
                             title="You >"
                             head="/me"
-                            isSelected={selectedItem === "You >"}
-                            onClick={() => handleItemClick("You >")}
+                            isSelected={selectedItem === "You"}
+                            onClick={() => handleItemClick("You")}
                         />
-                        <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/456/456212.png"
-                            title="Your channel"
-                            head="/yourchannel?channel_id=UC0fcwXT_xgCBUuuczF-imLQ"
-                            isSelected={selectedItem === "Your channel"}
-                            onClick={() => handleItemClick("Your channel")}
-                        />
+                        {params.user !== "Guest" ? (
+                            <Menuitem
+                                imgpath="https://cdn-icons-png.flaticon.com/128/456/456212.png"
+                                title="Your channel"
+                                head="/yourchannel"
+                                isSelected={selectedItem === "Your channel"}
+                                onClick={() => handleItemClick("Your channel")}
+                            />
+                        ) : (
+                            <></>
+                        )}
+
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/3503/3503786.png"
                             title="History"
@@ -100,51 +176,89 @@ function Menu(params) {
                             isSelected={selectedItem === "History"}
                             onClick={() => handleItemClick("History")}
                         />
-                        <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/4043/4043797.png"
-                            title="Playlists"
-                            head="/playlists"
-                            isSelected={selectedItem === "Playlists"}
-                            onClick={() => handleItemClick("Playlists")}
-                        />
-
-                        <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/15469/15469061.png"
-                            title="Watch later"
-                            head="/watchlater"
-                            isSelected={selectedItem === "Watch later"}
-                            onClick={() => handleItemClick("Watch later")}
-                        />
-                        <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/126/126473.png"
-                            title="Liked videos"
-                            head="/likedvideos"
-                            isSelected={selectedItem === "Liked videos"}
-                            onClick={() => handleItemClick("Liked videos")}
-                        />
-                    </div>
-                    <div className="menudiv">
-                        <h3>Subscriptions</h3>
-                        {subsdata.subscription ? (
-                            subsdata.subscription.map((item) => (
+                        {params.user !== "Guest" ? (
+                            <>
                                 <Menuitem
-                                    key={item.channel_id}
-                                    imgpath={item.channel_icon}
-                                    title={item.channel_name}
-                                    head={
-                                        "/channel?channel_id=" + item.channel_id
-                                    }
-                                    profile={true}
-                                    isSelected={
-                                        selectedItem === item.channel_name
-                                    }
+                                    imgpath="https://cdn-icons-png.flaticon.com/128/4043/4043797.png"
+                                    title="Playlists"
+                                    head="/playlists"
+                                    isSelected={selectedItem === "Playlists"}
+                                    onClick={() => handleItemClick("Playlists")}
+                                />
+
+                                <Menuitem
+                                    imgpath="https://cdn-icons-png.flaticon.com/128/15469/15469061.png"
+                                    title="Watch later"
+                                    head="/watchlater"
+                                    isSelected={selectedItem === "Watch later"}
                                     onClick={() =>
-                                        handleItemClick(item.channel_name)
+                                        handleItemClick("Watch later")
                                     }
                                 />
-                            ))
+                                <Menuitem
+                                    imgpath="https://cdn-icons-png.flaticon.com/128/126/126473.png"
+                                    title="Liked videos"
+                                    head="/likedvideos"
+                                    isSelected={selectedItem === "Liked videos"}
+                                    onClick={() =>
+                                        handleItemClick("Liked videos")
+                                    }
+                                />
+                            </>
                         ) : (
-                            <h1>Loading...</h1>
+                            <></>
+                        )}
+                    </div>
+                    <div className="menudiv">
+                        {params.user !== "Guest" ? (
+                            <>
+                                <h3>Subscriptions</h3>
+                                {subsdata.subscription ? (
+                                    subsdata.subscription.map((item) => (
+                                        <Menuitem
+                                            key={item.channel_id}
+                                            imgpath={item.channel_icon}
+                                            title={item.channel_name}
+                                            head={
+                                                "/channel?channel_id=" +
+                                                item.channel_id
+                                            }
+                                            profile={true}
+                                            isSelected={
+                                                selectedItem ===
+                                                item.channel_name
+                                            }
+                                            onClick={() =>
+                                                handleItemClick(
+                                                    item.channel_name
+                                                )
+                                            }
+                                        />
+                                    ))
+                                ) : (
+                                    <></>
+                                )}
+                            </>
+                        ) : (
+                            <div className="menuguestuser">
+                                <p className="guestuserp">
+                                    Sign in to like videos, comment, and
+                                    subscribe.
+                                </p>
+                                <Link
+                                    to="/login"
+                                    style={{ textDecoration: "none" }}
+                                >
+                                    <button className="sign_in">
+                                        <img
+                                            className="guesticon"
+                                            src="https://cdn-icons-png.flaticon.com/128/1077/1077063.png"
+                                            alt="user"
+                                        />
+                                        Sign In
+                                    </button>
+                                </Link>
+                            </div>
                         )}
                     </div>
                     <div className="menudiv">

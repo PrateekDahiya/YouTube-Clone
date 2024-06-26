@@ -1,18 +1,32 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import "./Channel.css";
+import axios from "axios";
 import Card from "./Card";
+import Cardloading from "./Cardloading";
 
 const Channel = (params) => {
+    const locationHook = useLocation();
     const [data, setData] = useState("");
     const [videos, setVideos] = useState("");
     const [query, setQuery] = useState("");
     const [typeShort, setType] = useState(0);
     const [refresh, setrefresh] = useState(0);
+    const serverurl = process.env.REACT_APP_SERVER_URL;
+    const [channel, setChannel] = useState(
+        new URLSearchParams(locationHook.search).get("channel_id")
+    );
+    useEffect(() => {
+        const currentChannel = new URLSearchParams(locationHook.search).get(
+            "channel_id"
+        );
+        setChannel(currentChannel);
+    }, [locationHook]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let getreq = `/channel` + window.location.search;
+                let getreq = `${serverurl}/channel?channel_id=` + channel;
                 const response = await fetch(getreq);
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -21,7 +35,7 @@ const Channel = (params) => {
             }
         };
         fetchData();
-    }, [typeShort]);
+    }, [typeShort, channel]);
 
     function refreshdata() {
         setrefresh(refresh + 1);
@@ -29,23 +43,24 @@ const Channel = (params) => {
 
     useEffect(() => {
         const fetchVideos = async () => {
-            try {
-                let getreq =
-                    `/getvideosofchannel` +
-                    window.location.search +
-                    "&type=" +
-                    typeShort +
-                    "&query=" +
-                    query;
-                const response = await fetch(getreq);
-                const jsonData = await response.json();
-                setVideos(jsonData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+            await axios
+                .get(
+                    `${serverurl}/getvideosofchannel` +
+                        window.location.search +
+                        "&type=" +
+                        typeShort +
+                        "&query=" +
+                        query
+                )
+                .then((response) => {
+                    setVideos(response.data);
+                })
+                .catch((error) => {
+                    console.log("Error in fetching: ", error.message);
+                });
         };
         fetchVideos();
-    }, [typeShort, refresh]);
+    }, [typeShort, refresh, channel]);
 
     function formatNumber(num) {
         if (num >= 1000000) {
@@ -68,11 +83,6 @@ const Channel = (params) => {
     function formatNumberWithCommas(number) {
         return number.toLocaleString();
     }
-
-    const handleClick = async (video, isShort) => {
-        window.location.href =
-            ((await isShort) ? "shorts?video_id=" : "watch?video_id=") + video;
-    };
 
     function formatISODate(isoDate) {
         const date = new Date(isoDate);
@@ -259,18 +269,12 @@ const Channel = (params) => {
                     </div>
                     <div className="videos">
                         {videos.videos.map((item) => (
-                            <Card
-                                key={item.video_id}
-                                data={item}
-                                onClick={() =>
-                                    handleClick(item.video_id, item.isShort)
-                                }
-                            />
+                            <Card key={item.video_id} data={item} />
                         ))}
                     </div>
                 </div>
             ) : (
-                <p>loading...</p>
+                <Cardloading page="channel" />
             )}
         </>
     );

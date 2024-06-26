@@ -1,19 +1,23 @@
 .shortsbox {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: end;
 }
 
 .short-btns {
     display: flex;
     flex-direction: column;
-    justify-content: end;
-    height: 640px;
+    height: fit-content;
     text-align: center;
     vertical-align: middle;
+    margin-left: 15px;
 }
 
 .short-btns p {
     margin: 0;
+    font-size: 11px;
+    text-align: center;
 }
 
 .shorts-btn {
@@ -22,7 +26,6 @@
     border-radius: 50%;
     background-color: var(--alt-color);
     text-align: center;
-    margin-left: 15px;
 }
 
 .shorts-btn:hover {
@@ -40,6 +43,6 @@
 }
 
 .profile-btn img {
-    width: 40px;
-    padding: 15px;
+    margin-top: 5px;
+    width: 50px;
 }

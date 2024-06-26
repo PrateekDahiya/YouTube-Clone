@@ -1,6 +1,7 @@
 .head {
     box-sizing: border-box;
     height: 60px;
+    width: 100%;
     display: flex;
     padding: 5px 0;
     flex-direction: row;
@@ -48,14 +49,18 @@
     border-radius: 50%;
 }
 
-form {
+.youtube-btn {
+    text-decoration: none;
+    color: var(--text-color);
     display: flex;
     flex-direction: row;
+    width: 100%;
     align-items: center;
 }
 
 .search {
     color: var(--text2-color);
+    width: 26%;
     margin-top: 3px;
     display: flex;
     flex-direction: row;
@@ -63,11 +68,10 @@ form {
 }
 
 .search input {
-    width: 450px;
+    width: 100%;
     height: 30px;
     padding-left: 10px;
     font-size: 13px;
-    /* color: #505050; */
     border: 1px solid var(--alt-color);
     border-radius: 30px 0 0 30px;
     background-color: var(--background-color);
@@ -75,7 +79,7 @@ form {
 
 .search input:focus {
     outline: none;
-    border: 1px solid #a3b4ca;
+    border: 1px solid var(--highlight-color);
 }
 
 .search input::placeholder {
@@ -97,6 +101,14 @@ form {
     background-color: var(--alt-color);
 }
 
+.search form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+}
+
 .search img {
     height: 25px;
     filter: var(--image-filter);
@@ -108,7 +120,14 @@ form {
     justify-content: space-between;
     align-items: center;
     margin-right: 30px;
-    width: 150px;
+}
+
+.login-profile {
+    text-decoration: none;
+}
+
+.sign_in {
+    text-decoration: none;
 }
 
 .create {

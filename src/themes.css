@@ -5,7 +5,9 @@ body.light {
     color: var(--text-color);
     --image-filter: none;
     --alt-color: #d9d6d6;
-    --text2-color: #1f1f1f;
+    --text2-color: #3f3f3f;
+    --highlight-color: #0e4eb5;
+    --error-msg: rgb(250, 95, 95);
 }
 
 body.dark {
@@ -16,4 +18,6 @@ body.dark {
     --image-filter: invert(1);
     --alt-color: #262929;
     --text2-color: #a0a0a0;
+    --highlight-color: #0e4eb5;
+    --error-msg: rgb(194, 87, 87);
 }

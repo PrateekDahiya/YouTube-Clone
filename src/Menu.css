@@ -1,19 +1,35 @@
 .Menu {
-    position: relative;
-    overflow-y: scroll;
     height: 91vh;
-    padding: 0 10px;
-    box-sizing: border-box;
-    vertical-align: middle;
+    overflow-y: scroll;
+    margin-left: 10px;
 }
 
 .Menu::-webkit-scrollbar {
-    width: 5px;
+    width: 10px;
+    height: 10px;
+}
+
+.Menu:hover::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.Menu:hover::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 10px;
+}
+
+.Menu:hover::-webkit-scrollbar-thumb {
+    background: var(--alt-color);
+}
+
+.Menu:hover::-webkit-scrollbar-thumb:hover {
+    background: var(--text2-color);
 }
 
 .menudiv {
     margin-top: 5px;
-    border-bottom: 1px solid #d9d6d6;
+    border-bottom: 1px solid var(--alt-color);
 }
 
 h3 {
@@ -23,3 +39,5 @@ h3 {
 .HiddenMenu {
     padding: 0;
 }
+
+

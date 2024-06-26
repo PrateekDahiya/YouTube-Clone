@@ -1,20 +1,52 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./Card.css";
+
 const Card = (params) => {
-    function getDateDifference(date1, date2) {
-        // Calculate the difference in milliseconds
+    const [linkto, setLinkto] = useState();
+
+    const serverurl = process.env.REACT_APP_SERVER_URL;
+
+    const addHistory = async () => {
+        try {
+            const video_id = params.data.video_id;
+            let history = JSON.parse(localStorage.getItem("history")) || [];
+            const existingIndex = history.findIndex(
+                (item) => item.video_id === video_id
+            );
+
+            if (existingIndex !== -1) {
+                history.splice(existingIndex, 1);
+            }
+
+            history.unshift({
+                video_id: video_id,
+                timestamp: new Date().toISOString(),
+            });
+
+            localStorage.setItem("history", JSON.stringify(history));
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleClick = () => {
+        addHistory();
+    };
+
+    const getDateDifference = (date1, date2) => {
+        if (!date1 || !date2) return "";
+
         const differenceMs = Math.abs(date1 - date2);
 
-        // Convert milliseconds to various time units
         const millisecondsInSecond = 1000;
         const millisecondsInMinute = millisecondsInSecond * 60;
         const millisecondsInHour = millisecondsInMinute * 60;
         const millisecondsInDay = millisecondsInHour * 24;
         const millisecondsInWeek = millisecondsInDay * 7;
-        const millisecondsInMonth = millisecondsInDay * 30; // Approximate, for simplicity
-        const millisecondsInYear = millisecondsInDay * 365; // Approximate, for simplicity
+        const millisecondsInMonth = millisecondsInDay * 30;
+        const millisecondsInYear = millisecondsInDay * 365;
 
-        // Calculate the difference in each unit
         const years = Math.floor(differenceMs / millisecondsInYear);
         const months = Math.floor(differenceMs / millisecondsInMonth);
         const weeks = Math.floor(differenceMs / millisecondsInWeek);
@@ -23,7 +55,6 @@ const Card = (params) => {
         const minutes = Math.floor(differenceMs / millisecondsInMinute);
         const seconds = Math.floor(differenceMs / millisecondsInSecond);
 
-        // Construct the result string
         let result = "";
         if (years > 0) {
             result += years + (years === 1 ? " year" : " years");
@@ -42,9 +73,11 @@ const Card = (params) => {
         }
 
         return result;
-    }
+    };
 
-    function formatNumber(num) {
+    const formatNumber = (num) => {
+        if (!num) return "";
+
         if (num >= 1000000) {
             return (num / 1000000).toFixed(1) + "M";
         } else if (num >= 1000) {
@@ -52,9 +85,11 @@ const Card = (params) => {
         } else {
             return num.toString();
         }
-    }
+    };
 
-    function formatDuration(seconds) {
+    const formatDuration = (seconds) => {
+        if (!seconds) return "";
+
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         const remainingSeconds = seconds % 60;
@@ -68,26 +103,44 @@ const Card = (params) => {
         } else {
             return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
         }
-    }
+    };
+
+    useEffect(() => {
+        const setlink = async () => {
+            setLinkto(
+                ((await params.data.isShort) === 1
+                    ? "/shorts?video_id="
+                    : "/watch?video_id=") + params.data.video_id
+            );
+        };
+        setlink();
+    }, []);
 
     return (
-        <div className="card" onClick={() => params.onClick(params.data.link)}>
+        <Link to={linkto} onClick={handleClick} className="card">
             <img
                 className="thumbnail"
-                src={params.data.thumbnail_link}
-                alt={params.data.title}
+                src={params.data.thumbnail_link || ""}
+                alt={params.data.title || ""}
             />
             <span className="duration">
                 {formatDuration(params.data.duration)}
             </span>
             <div className="info">
-                <img
-                    src={params.data.channel_icon}
-                    alt={params.data.channel_name}
-                />
+                <Link to={`channel?channel_id=${params.data.channel_id}`}>
+                    <img
+                        src={params.data.channel_icon || ""}
+                        alt={params.data.channel_name || ""}
+                    />
+                </Link>
                 <div className="text">
-                    <p className="videotitle">{params.data.title}</p>
-                    <p className="channelname">{params.data.channel_name}</p>
+                    <p className="videotitle">{params.data.title || ""}</p>
+                    <Link
+                        className="channelname"
+                        to={`/channel?channel_id=${params.data.channel_id}`}
+                    >
+                        {params.data.channel_name || ""}
+                    </Link>
                     <div className="viewsntime">
                         <p className="views">
                             {formatNumber(params.data.views)} views &bull;
@@ -101,7 +154,7 @@ const Card = (params) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
