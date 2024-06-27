@@ -9,6 +9,7 @@ const History = (params) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const serverurl = process.env.REACT_APP_SERVER_URL;
+    const user = params.user;
 
     const compareTimestamps = (timestamp) => {
         const currentTime = new Date();
@@ -65,7 +66,7 @@ const History = (params) => {
             setLoading(false);
         };
         fetchHistoryData();
-    }, [serverurl]);
+    }, [serverurl, user]);
 
     const renderCardsByTime = (timeCategory) => {
         return data

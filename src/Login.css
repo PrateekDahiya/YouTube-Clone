@@ -127,3 +127,19 @@
     margin: 0;
     text-wrap: balance;
 }
+
+.pass-eye-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.pass-eye {
+    position: relative;
+    left: -40px;
+    margin: 0;
+    padding: 0;
+    width: 20px;
+    filter: var(--image-filter);
+    cursor: pointer;
+}

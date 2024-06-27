@@ -66,20 +66,32 @@
     margin: 0;
 }
 
-.subbuttons button {
-    color: var(--text2-color);
-    font-weight: 500;
-    border-radius: 20px;
-    padding: 10px;
-    margin-right: 5px;
-    background-color: var(--alt-color);
+.subscribe {
+    background-color: var(--text-color);
+    color: var(--background-color);
     border: none;
+    width: 100px;
+    height: 30px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 300;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
-.subbuttons button:hover {
-    cursor: pointer;
-    color: var(--alt-color);
+.subscribe:hover {
+    background-color: var(--alt-color);
+    color: var(--text-color);
+}
+
+.ed {
     background-color: var(--text2-color);
+    color: var(--background-color);
+}
+
+.ed:hover {
+    background-color: var(--text-color);
+    color: var(--background-color);
 }
 
 .desc {

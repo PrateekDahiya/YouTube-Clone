@@ -6,27 +6,15 @@ import Cardloading from "./Cardloading";
 
 const Watch = (params) => {
     const [data, setData] = useState("");
-    const [subs, setSubs] = useState("Subscribe");
-    const [likestate, setlike] = useState("");
+    const [isliked, setisliked] = useState(false);
+    const [isdisliked, setIsdisliked] = useState(false);
     const [watchdata, setwatchdata] = useState([]);
     const serverurl = process.env.REACT_APP_SERVER_URL;
-
-    const handlesubclick = async () => {
-        if (subs === "Subscribe") {
-            setSubs("Subscribed");
-        } else {
-            setSubs("Subscribe");
-        }
-    };
-
-    const handlelike = async (type) => {
-        if (type === "like") {
-            setlike("Liked");
-        } else {
-            setlike("Disliked");
-        }
-        console.log(likestate);
-    };
+    const user = params.user;
+    const [issubed, setissubed] = useState(false);
+    const [channel_id, setChannel_id] = useState(null);
+    const [video_id, setVideo_id] = useState(null);
+    const [user_chl_id, setUser_chl_id] = useState(null);
 
     function formatNumber(num) {
         if (num >= 1000000) {
@@ -37,6 +25,84 @@ const Watch = (params) => {
             return num.toString();
         }
     }
+
+    const addSubscriber = async () => {
+        const requestData = {
+            user_chl_id,
+            channel_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/addtosubs`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+        setissubed(true);
+    };
+
+    const unsub = async () => {
+        const requestData = {
+            user_chl_id,
+            channel_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/removefromsubs`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+
+        setissubed(false);
+    };
+
+    const addlike = async () => {
+        const requestData = {
+            user_id: user_chl_id,
+            video_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/addtoliked`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+        setisliked(true);
+    };
+
+    const removelike = async () => {
+        const requestData = {
+            user_id: user_chl_id,
+            video_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/removefromliked`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+
+        setisliked(false);
+    };
+
+    useEffect(() => {
+        const issubscribed = async () => {
+            const response = await axios.get(
+                `${serverurl}/issub?user_id=${user_chl_id}&channel_id=${channel_id}`
+            );
+            setissubed(response.data.sub);
+        };
+
+        const isliked = async () => {
+            const response = await axios.get(
+                `${serverurl}/isliked?user_id=${user_chl_id}&video_id=${video_id}`
+            );
+            setisliked(response.data.liked);
+        };
+
+        isliked();
+        issubscribed();
+    }, [user_chl_id, channel_id, video_id]);
+
     const [i, seti] = useState(true);
     useEffect(() => {
         if (i === true) {
@@ -61,18 +127,25 @@ const Watch = (params) => {
             await axios
                 .get(`${serverurl}/watch` + window.location.search)
                 .then((response) => {
-                    setwatchdata(response.data);
+                    setwatchdata(response.data.data[0]);
+                    console.log(watchdata);
                 })
                 .catch((error) => {
                     console.log("Error in fetching: ", error.message);
                 });
         };
         fetchwatchdata();
-    }, []);
+    }, [user]);
+
+    useEffect(() => {
+        setUser_chl_id(user.channel_id);
+        setChannel_id(watchdata.channel_id);
+        setVideo_id(watchdata.video_id);
+    }, [user, watchdata]);
 
     return (
         <>
-            {watchdata.data ? (
+            {watchdata && data ? (
                 <div className="watchpage">
                     <div className="vplayer">
                         <div className="video-player">
@@ -83,59 +156,89 @@ const Watch = (params) => {
                         </div>
 
                         <div className="video_info">
-                            <p className="title">{watchdata.data[0].title}</p>
+                            <p className="title">{watchdata.title}</p>
                             <div className="box">
                                 <div className="boxpart1">
                                     <img
                                         className="channelicon"
-                                        src={watchdata.data[0].channel_icon}
+                                        src={watchdata.channel_icon}
                                         alt="channel"
                                     />
                                     <div className="namensubs">
                                         <p>
-                                            <b>
-                                                {watchdata.data[0].channel_name}
-                                            </b>
+                                            <b>{watchdata.channel_name}</b>
                                             <br></br>
                                             {formatNumber(
-                                                watchdata.data[0].subscribers
+                                                watchdata.subscribers
                                             )}{" "}
                                             subscribers
                                         </p>
                                         <p></p>
                                     </div>
                                     <button
-                                        className="subscribe_btn"
+                                        className={
+                                            issubed
+                                                ? "subscribe ed"
+                                                : "subscribe"
+                                        }
                                         onClick={() => {
-                                            handlesubclick();
+                                            issubed ? unsub() : addSubscriber();
                                         }}
                                     >
-                                        {subs}
+                                        {issubed ? "Subscribed" : "Subscribe"}
                                     </button>
                                 </div>
                                 <div className="boxpart2">
                                     <button
                                         className="like_btn"
                                         onClick={() => {
-                                            handlelike("like");
+                                            if (isliked) {
+                                                removelike();
+                                            } else {
+                                                addlike();
+                                                if (isdisliked) {
+                                                    setIsdisliked(false);
+                                                }
+                                            }
                                         }}
                                     >
-                                        <img
-                                            src="https://cdn-icons-png.flaticon.com/128/126/126473.png"
-                                            alt="like"
-                                        />
-                                        {formatNumber(watchdata.data[0].likes)}
+                                        {isliked ? (
+                                            <img
+                                                src="https://cdn-icons-png.flaticon.com/128/739/739231.png"
+                                                alt="liked"
+                                            />
+                                        ) : (
+                                            <img
+                                                src="https://cdn-icons-png.flaticon.com/128/126/126473.png"
+                                                alt="like"
+                                            />
+                                        )}
+                                        {formatNumber(watchdata.likes)}
                                     </button>
                                     <button
                                         className="dislike_btn"
                                         onClick={() => {
-                                            handlelike("dislike");
+                                            if (isdisliked) {
+                                                setIsdisliked(false);
+                                            } else {
+                                                setIsdisliked(true);
+                                                if (isliked) {
+                                                    removelike();
+                                                }
+                                            }
                                         }}
                                     >
-                                        <img
-                                            src="https://cdn-icons-png.flaticon.com/128/126/126504.png"
-                                            alt="dislike"
-                                        />
+                                        {isdisliked ? (
+                                            <img
+                                                src="https://cdn-icons-png.flaticon.com/128/880/880613.png"
+                                                alt="disliked"
+                                            />
+                                        ) : (
+                                            <img
+                                                src="https://cdn-icons-png.flaticon.com/128/126/126504.png"
+                                                alt="dislike"
+                                            />
+                                        )}
                                     </button>
                                     <button className="share_btn">
                                         <img
@@ -155,7 +258,7 @@ const Watch = (params) => {
                             </div>
                         </div>
                         <div className="description">
-                            <p>{watchdata.data[0].video_description}</p>
+                            <p>{watchdata.video_description}</p>
                         </div>
                     </div>
                     <div className="relatedvideos"></div>

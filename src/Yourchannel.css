@@ -48,22 +48,6 @@
     margin: 0;
 }
 
-.subbuttons button {
-    color: var(--text2-color);
-    font-weight: 500;
-    border-radius: 20px;
-    padding: 10px;
-    margin-right: 5px;
-    background-color: var(--alt-color);
-    border: none;
-}
-
-.subbuttons button:hover {
-    cursor: pointer;
-    color: var(--alt-color);
-    background-color: var(--text2-color);
-}
-
 .menus {
     display: flex;
     flex-direction: row;

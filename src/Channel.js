@@ -12,30 +12,74 @@ const Channel = (params) => {
     const [query, setQuery] = useState("");
     const [typeShort, setType] = useState(0);
     const [refresh, setrefresh] = useState(0);
+    const [issubed, setissubed] = useState(false);
+    const [user_chl_id, setUser_chl_id] = useState(null);
     const serverurl = process.env.REACT_APP_SERVER_URL;
-    const [channel, setChannel] = useState(
+
+    const [channel_id, setChannel_id] = useState(
         new URLSearchParams(locationHook.search).get("channel_id")
     );
+    const user = params.user;
+
+    const addSubscriber = async () => {
+        const requestData = {
+            user_chl_id,
+            channel_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/addtosubs`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+        setissubed(true);
+    };
+
+    const unsub = async () => {
+        const requestData = {
+            user_chl_id,
+            channel_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/removefromsubs`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+
+        setissubed(false);
+    };
+
+    useEffect(() => {
+        const issubscribed = async () => {
+            const response = await axios.get(
+                `${serverurl}/issub?user_id=${user_chl_id}&channel_id=${channel_id}`
+            );
+            setissubed(response.data.sub);
+        };
+        issubscribed();
+    }, [user_chl_id, channel_id]);
+
     useEffect(() => {
         const currentChannel = new URLSearchParams(locationHook.search).get(
             "channel_id"
         );
-        setChannel(currentChannel);
+        setChannel_id(currentChannel);
     }, [locationHook]);
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                let getreq = `${serverurl}/channel?channel_id=` + channel;
-                const response = await fetch(getreq);
-                const jsonData = await response.json();
-                setData(jsonData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+            await axios
+                .get(`${serverurl}/channel?channel_id=${channel_id}`)
+                .then((response) => {
+                    setData(response.data.channel[0]);
+                })
+                .catch((error) => {
+                    console.log("Error in fetching: ", error.message);
+                });
         };
         fetchData();
-    }, [typeShort, channel]);
+    }, [typeShort, channel_id, user]);
 
     function refreshdata() {
         setrefresh(refresh + 1);
@@ -46,7 +90,8 @@ const Channel = (params) => {
             await axios
                 .get(
                     `${serverurl}/getvideosofchannel` +
-                        window.location.search +
+                        "?channel_id=" +
+                        channel_id +
                         "&type=" +
                         typeShort +
                         "&query=" +
@@ -60,7 +105,11 @@ const Channel = (params) => {
                 });
         };
         fetchVideos();
-    }, [typeShort, refresh, channel]);
+    }, [typeShort, refresh, channel_id, user]);
+
+    useEffect(() => {
+        setUser_chl_id(user.channel_id);
+    }, [user]);
 
     function formatNumber(num) {
         if (num >= 1000000) {
@@ -109,13 +158,13 @@ const Channel = (params) => {
 
     return (
         <>
-            {data.channel && videos.videos ? (
+            {data && videos.videos ? (
                 <div className="outer">
-                    {data.channel[0].channel_banner !== "N/A" ? (
+                    {data.channel_banner !== "N/A" ? (
                         <div className="banner">
                             <img
                                 alt="channel_banner"
-                                src={data.channel[0].channel_banner}
+                                src={data.channel_banner}
                             />
                         </div>
                     ) : (
@@ -126,18 +175,16 @@ const Channel = (params) => {
                         <img
                             className="mypic"
                             alt="Profile"
-                            src={data.channel[0].channel_icon}
+                            src={data.channel_icon}
                         />
                         <div className="details">
-                            <p className="name">
-                                {data.channel[0].channel_name}
-                            </p>
+                            <p className="name">{data.channel_name}</p>
                             <p className="id">
-                                {data.channel[0].custom_url}
+                                {data.custom_url}
                                 {" • "}
-                                {formatNumber(data.channel[0].subscribers)}
+                                {formatNumber(data.subscribers)}
                                 {" subscribers • "}
-                                {formatNumber(data.channel[0].video_count)}
+                                {formatNumber(data.video_count)}
                                 {" videos"}
                             </p>
                             <p
@@ -146,7 +193,7 @@ const Channel = (params) => {
                                     show_moredesc();
                                 }}
                             >
-                                {getshortinfo(data.channel[0].short_desc)}...
+                                {getshortinfo(data.short_desc)}...
                                 <b>more</b>
                             </p>
                             <div className="moredesc">
@@ -161,9 +208,7 @@ const Channel = (params) => {
                                         X
                                     </span>
                                 </p>
-                                <p className="descdata">
-                                    {data.channel[0].short_desc}
-                                </p>
+                                <p className="descdata">{data.short_desc}</p>
                                 <p className="deschead">Channel details</p>
                                 <p className="descdata">
                                     <img
@@ -171,32 +216,28 @@ const Channel = (params) => {
                                         src="https://cdn-icons-png.flaticon.com/128/900/900782.png"
                                     />
                                     /channel?channel_id=
-                                    {data.channel[0].channel_id}
+                                    {data.channel_id}
                                 </p>
                                 <p className="descdata">
                                     <img
                                         alt="datashow"
                                         src="https://cdn-icons-png.flaticon.com/128/825/825636.png"
                                     />
-                                    {formatNumber(data.channel[0].subscribers)}{" "}
-                                    subscribers
+                                    {formatNumber(data.subscribers)} subscribers
                                 </p>
                                 <p className="descdata">
                                     <img
                                         alt="datashow"
                                         src="https://cdn-icons-png.flaticon.com/128/1179/1179120.png"
                                     />
-                                    {formatNumber(data.channel[0].video_count)}{" "}
-                                    videos
+                                    {formatNumber(data.video_count)} videos
                                 </p>
                                 <p className="descdata">
                                     <img
                                         alt="datashow"
                                         src="https://cdn-icons-png.flaticon.com/128/3742/3742162.png"
                                     />
-                                    {formatNumberWithCommas(
-                                        data.channel[0].total_views
-                                    )}{" "}
+                                    {formatNumberWithCommas(data.total_views)}{" "}
                                     views
                                 </p>
                                 <p className="descdata">
@@ -204,22 +245,27 @@ const Channel = (params) => {
                                         alt="datashow"
                                         src="https://cdn-icons-png.flaticon.com/128/2342/2342329.png"
                                     />
-                                    Joined{" "}
-                                    {formatISODate(
-                                        data.channel[0].date_created
-                                    )}
+                                    Joined {formatISODate(data.date_created)}
                                 </p>
                                 <p className="descdata">
                                     <img
                                         alt="datashow"
                                         src="https://cdn-icons-png.flaticon.com/128/2838/2838912.png"
                                     />
-                                    {data.channel[0].location}
+                                    {data.location}
                                 </p>
                             </div>
                             <div className="subbuttons">
-                                <button className="subscribe">Subscribe</button>
-                                <button className="join">Join</button>
+                                <button
+                                    className={
+                                        issubed ? "subscribe ed" : "subscribe"
+                                    }
+                                    onClick={() => {
+                                        issubed ? unsub() : addSubscriber();
+                                    }}
+                                >
+                                    {issubed ? "Subscribed" : "Subscribe"}
+                                </button>
                             </div>
                         </div>
                     </div>

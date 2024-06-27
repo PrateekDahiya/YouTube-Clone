@@ -16,6 +16,8 @@ function Login(params) {
     const [validEmail, setValidEmail] = useState(false);
     const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showCPassword, setShowCPassword] = useState(false);
     const [validPassword, setValidPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
     const [username, setUsername] = useState("");
@@ -52,6 +54,24 @@ function Login(params) {
         e.preventDefault();
         seti(i + 1);
     };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleCPasswordVisibility = () => {
+        setShowCPassword(!showCPassword);
+    };
+
+    useEffect(() => {
+        if (type === "logout") {
+            const LogOut = () => {
+                Cookies.remove("user");
+                window.location.href = "/";
+            };
+            LogOut();
+        }
+    }, [type]);
 
     function sanitizeForSQL(input) {
         return input.replace(/'/g, "''");
@@ -94,68 +114,44 @@ function Login(params) {
         }
     }
 
-    const handleSubmit = async (e, type) => {
-        if (type === "login") {
-            const hashpass = stringToHash(password);
-            await axios
-                .get(`${serverurl}/login`, {
-                    params: {
-                        username: username,
-                        email: email,
-                        hashpass: hashpass,
-                    },
-                })
-                .then(async (response) => {
-                    console.log("Response data:", await response.data);
-                    Cookies.set(
-                        "channel_icon",
-                        response.data.user.channel_icon,
-                        {
-                            expires: 30,
-                        }
-                    );
-                    Cookies.set("userid", response.data.user.user_id, {
-                        expires: 30,
-                    });
-                    Cookies.set("username", response.data.user.username, {
-                        expires: 30,
-                    });
-                    Cookies.set("channel_id", response.data.user.channel_id, {
-                        expires: 30,
-                    });
-                    Cookies.set("email", response.data.user.email, {
-                        expires: 30,
-                    });
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
-        }
+    const setCookie = (user) => {
+        Cookies.set("user", JSON.stringify(user), { expires: 30 });
+    };
 
-        if (type === "register") {
-            const hashpass = stringToHash(password);
-            const fnamefix = sanitizeForSQL(firstname);
-            const lnamefix = sanitizeForSQL(lastname);
-            const chl_namefix = sanitizeForSQL(channel_name);
-            const chl_descfix = sanitizeForSQL(channel_desc);
-            await axios
-                .post(`${serverurl}/register`, {
+    const handleSubmit = async (e, type) => {
+        const hashpass = stringToHash(password);
+        try {
+            if (type === "login") {
+                const response = await axios.get(`${serverurl}/login`, {
+                    params: { username, email, hashpass },
+                });
+                setCookie(response.data.user);
+                return true;
+            }
+
+            if (type === "register") {
+                const requestData = {
                     email,
                     username,
-                    fnamefix,
-                    lnamefix,
                     hashpass,
+                    fnamefix: sanitizeForSQL(firstname),
+                    lnamefix: sanitizeForSQL(lastname),
+                    chl_namefix: sanitizeForSQL(channel_name),
+                    chl_descfix: sanitizeForSQL(channel_desc),
                     DOB,
-                    chl_namefix,
-                    chl_descfix,
                     location,
-                })
-                .then((response) => {
-                    console.log("Response data:", response.data);
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
+                };
+                const response = await axios.post(
+                    `${serverurl}/register`,
+                    requestData
+                );
+                console.log("Response data:", response.data);
+                setCookie(response.data.user);
+                return true;
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            return false;
         }
     };
 
@@ -475,35 +471,77 @@ function Login(params) {
                         }}
                     >
                         <div className="inputdata">
-                            <input
-                                className={validPassword ? "valid" : "invalid"}
-                                type="password"
-                                value={password}
-                                id="password"
-                                autoComplete="off"
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Password"
-                                aria-invalid={validPassword ? "false" : "true"}
-                                required
-                                autoFocus
-                            />
+                            <div className="pass-eye-box">
+                                <input
+                                    className={
+                                        validPassword ? "valid" : "invalid"
+                                    }
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    id="password"
+                                    autoComplete="off"
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    placeholder="Password"
+                                    aria-invalid={
+                                        validPassword ? "false" : "true"
+                                    }
+                                    required
+                                    autoFocus
+                                />
+                                {showPassword ? (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
+                                        alt="show pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                ) : (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
+                                        alt="hide pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                )}
+                            </div>
+
                             {passwordError && (
                                 <p className="error">{passwordError}</p>
                             )}
                             <br></br>
-                            <input
-                                className={validMatch ? "valid" : "invalid"}
-                                type="password"
-                                value={confirm_password}
-                                id="confirm_password"
-                                autoComplete="off"
-                                onChange={(e) =>
-                                    setConfirmpassword(e.target.value)
-                                }
-                                aria-invalid={validMatch ? "false" : "true"}
-                                placeholder="Confirm Password"
-                                required
-                            />
+                            <div className="pass-eye-box">
+                                <input
+                                    className={validMatch ? "valid" : "invalid"}
+                                    type={showCPassword ? "text" : "password"}
+                                    value={confirm_password}
+                                    id="confirm_password"
+                                    autoComplete="off"
+                                    onChange={(e) =>
+                                        setConfirmpassword(e.target.value)
+                                    }
+                                    aria-invalid={validMatch ? "false" : "true"}
+                                    placeholder="Confirm Password"
+                                    required
+                                />
+                                {showCPassword ? (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
+                                        alt="show pass"
+                                        onClick={toggleCPasswordVisibility}
+                                    />
+                                ) : (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
+                                        alt="hide pass"
+                                        onClick={toggleCPasswordVisibility}
+                                    />
+                                )}
+                            </div>
+
                             {matchError && (
                                 <p className="error">{matchError}</p>
                             )}
@@ -572,6 +610,7 @@ function Login(params) {
                                 aria-invalid={validLocation ? "false" : "true"}
                                 aria-placeholder="Select your location"
                             >
+                                <option value="">Select your country</option>
                                 <option value="AF">Afghanistan</option>
                                 <option value="AL">Albania</option>
                                 <option value="DZ">Algeria</option>
@@ -902,10 +941,16 @@ function Login(params) {
                             <br></br>
                             <button
                                 type="submit"
-                                onClick={(e) => {
+                                onClick={async (e) => {
                                     if (allValid4reg) {
-                                        handleSubmit(e, "register");
-                                        window.location.href = "/login";
+                                        if (
+                                            (await handleSubmit(
+                                                e,
+                                                "register"
+                                            )) === true
+                                        ) {
+                                            window.location.href = "/login";
+                                        }
                                     }
                                 }}
                             >
@@ -1027,26 +1072,52 @@ function Login(params) {
                         }}
                     >
                         <div className="inputdata">
-                            <input
-                                className={validPassword ? "valid" : "invalid"}
-                                type="text"
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Password"
-                                required
-                                autoFocus
-                            />
+                            <div className="pass-eye-box">
+                                <input
+                                    className={
+                                        validPassword ? "valid" : "invalid"
+                                    }
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    placeholder="Password"
+                                    required
+                                    autoFocus
+                                />
+                                {showPassword ? (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
+                                        alt="show pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                ) : (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
+                                        alt="hide pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                )}
+                            </div>
+
                             {passwordError && (
                                 <p className="error">{passwordError}</p>
                             )}
                             <br></br>
                             <button
                                 type="submit"
-                                onClick={(e) => {
+                                onClick={async (e) => {
                                     if (validPassword && allValid4login) {
-                                        handleSubmit(e, "login");
-                                        window.location.href = "/home";
+                                        if (
+                                            (await handleSubmit(e, "login")) ===
+                                            true
+                                        ) {
+                                            window.location.href = "/home";
+                                        }
                                     }
                                 }}
                             >

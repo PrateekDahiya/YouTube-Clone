@@ -132,13 +132,7 @@
 
 .create {
     width: 20px;
-    padding: 6.5px;
-    border-radius: 50%;
-    filter: var(--image-filter);
-}
-
-.toogle-theme {
-    width: 20px;
+    margin-left: 20px;
     padding: 6.5px;
     border-radius: 50%;
     filter: var(--image-filter);
@@ -146,6 +140,7 @@
 
 .notifications {
     width: 20px;
+    margin-left: 20px;
     padding: 6px;
     border-radius: 50%;
     filter: var(--image-filter);
@@ -153,6 +148,7 @@
 
 .profilepic {
     border-radius: 50%;
+    margin-left: 20px;
     width: 35px;
 }
 
@@ -172,4 +168,60 @@
 .create:hover {
     cursor: pointer;
     background-color: #d9d6d6;
+}
+
+.dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-width: 180px;
+    max-width: 400px;
+    overflow: hidden;
+    border-radius: 20px;
+    z-index: 1;
+    border: 0.5px solid var(--alt-color);
+}
+
+.dropdown-menu-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    color: var(--text-color);
+    text-align: center;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.dropdown-menu-item-text {
+    margin-left: 5px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.dropdown-menu-item-img {
+    width: 20px;
+    margin-left: 10px;
+    filter: var(--image-filter);
+}
+.dropdown-menu-item:hover {
+    background-color: var(--alt-color);
+}
+
+.profile-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px;
+}
+
+.profile-box-img {
+    width: 40px;
+    border-radius: 50%;
+}
+
+.profile-box-text {
+    font-size: 11px;
 }

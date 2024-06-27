@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
 import Menuitem from "./Menuitem";
 import axios from "axios";
 import "./Menu.css";
@@ -13,7 +12,7 @@ function Menu(params) {
     const serverurl = process.env.REACT_APP_SERVER_URL;
     const [menu, setMenu] = useState("Full");
     const [page, setPage] = useState(locationHook.pathname);
-    const user_channel_id = Cookies.get("channel_id");
+    const user = params.user;
     useEffect(() => {
         const currentpage = locationHook.pathname;
         setPage(currentpage);
@@ -71,7 +70,7 @@ function Menu(params) {
     useEffect(() => {
         const fetchsubs = async () => {
             await axios
-                .get(`${serverurl}/get-subs/${user_channel_id}`)
+                .get(`${serverurl}/get-subs?user_id=${await user.channel_id}`)
                 .then((response) => {
                     setsubsData(response.data);
                 })
@@ -80,7 +79,7 @@ function Menu(params) {
                 });
         };
         fetchsubs();
-    }, []);
+    }, [user, page]);
 
     const handleItemClick = (title) => {
         setSelectedItem(title);
@@ -209,37 +208,32 @@ function Menu(params) {
                             <></>
                         )}
                     </div>
-                    <div className="menudiv">
-                        {params.user !== "Guest" ? (
-                            <>
+
+                    {params.user !== "Guest" ? (
+                        subsdata.subscription &&
+                        subsdata.subscription.length > 0 ? (
+                            <div className="menudiv">
                                 <h3>Subscriptions</h3>
-                                {subsdata.subscription ? (
-                                    subsdata.subscription.map((item) => (
-                                        <Menuitem
-                                            key={item.channel_id}
-                                            imgpath={item.channel_icon}
-                                            title={item.channel_name}
-                                            head={
-                                                "/channel?channel_id=" +
-                                                item.channel_id
-                                            }
-                                            profile={true}
-                                            isSelected={
-                                                selectedItem ===
-                                                item.channel_name
-                                            }
-                                            onClick={() =>
-                                                handleItemClick(
-                                                    item.channel_name
-                                                )
-                                            }
-                                        />
-                                    ))
-                                ) : (
-                                    <></>
-                                )}
-                            </>
-                        ) : (
+                                {subsdata.subscription.map((item) => (
+                                    <Menuitem
+                                        key={item.channel_id}
+                                        imgpath={item.channel_icon}
+                                        title={item.channel_name}
+                                        head={`/channel?channel_id=${item.channel_id}`}
+                                        profile={true}
+                                        isSelected={
+                                            selectedItem === item.channel_name
+                                        }
+                                        onClick={() =>
+                                            handleItemClick(item.channel_name)
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        ) : null
+                    ) : (
+                        <div className="menudiv">
+                            <h3>Subscriptions</h3>
                             <div className="menuguestuser">
                                 <p className="guestuserp">
                                     Sign in to like videos, comment, and
@@ -259,8 +253,9 @@ function Menu(params) {
                                     </button>
                                 </Link>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
+
                     <div className="menudiv">
                         <h3>Explore</h3>
                         <Menuitem

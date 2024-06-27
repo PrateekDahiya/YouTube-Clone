@@ -57,3 +57,12 @@
     margin: 10px;
     filter: var(--image-filter);
 }
+
+.subs {
+    overflow: visible;
+}
+
+.time-box {
+    margin-bottom: 30px;
+    height: auto;
+}

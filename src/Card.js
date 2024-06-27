@@ -134,7 +134,11 @@ const Card = (params) => {
                     />
                 </Link>
                 <div className="text">
-                    <p className="videotitle">{params.data.title || ""}</p>
+                    <p className="videotitle">
+                        {params.data.title.length >= 100
+                            ? params.data.title.substring(0, 50) + "..."
+                            : params.data.title || ""}
+                    </p>
                     <Link
                         className="channelname"
                         to={`/channel?channel_id=${params.data.channel_id}`}

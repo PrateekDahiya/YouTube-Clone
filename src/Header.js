@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { ThemeContext } from "./ThemeContext.js";
 import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
 import "./Header.css";
 import "./themes.css";
 
@@ -11,7 +10,12 @@ const Header = (params) => {
     const [query, setQuery] = useState("");
     const { theme, toggleTheme } = useContext(ThemeContext);
     const [page, setPage] = useState(locationHook.pathname);
-    const user_channel_icon = Cookies.get("channel_icon");
+    const user = params.user;
+    const [isprofilemenu, setIsprofilemenu] = useState(false);
+
+    const toggleDropdown = () => {
+        setIsprofilemenu(!isprofilemenu);
+    };
 
     useEffect(() => {
         const currentpage = locationHook.pathname;
@@ -75,12 +79,6 @@ const Header = (params) => {
                 </form>
             </div>
             <div className="profile">
-                <img
-                    className="toogle-theme"
-                    src="https://cdn-icons-png.flaticon.com/128/12377/12377255.png"
-                    alt="Toogle Theme"
-                    onClick={toggleTheme}
-                />
                 <div className="login-profile">
                     {params.user !== "Guest" ? (
                         <>
@@ -96,9 +94,115 @@ const Header = (params) => {
                             />
                             <img
                                 className="profilepic"
-                                src={user_channel_icon}
+                                src={user.channel_icon}
                                 alt="Profile"
+                                onClick={toggleDropdown}
                             />
+                            {isprofilemenu && (
+                                <div className="dropdown-menu">
+                                    <div className="profile-box">
+                                        <img
+                                            className="profile-box-img"
+                                            src={user.channel_icon}
+                                            alt="profile"
+                                        ></img>
+                                        <div>
+                                            <p className="profile-box-text">
+                                                {user.username}
+                                            </p>
+                                            <p className="profile-box-text">
+                                                {user.custom_url}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Link
+                                        to="/me"
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <div className="dropdown-menu-item">
+                                            <img
+                                                className="dropdown-menu-item-img"
+                                                src="https://cdn-icons-png.flaticon.com/128/456/456212.png"
+                                                alt="Logout"
+                                            />
+                                            <p className="dropdown-menu-item-text">
+                                                View profile
+                                            </p>
+                                        </div>
+                                    </Link>
+                                    <Link
+                                        to="/yourchannel"
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <div className="dropdown-menu-item">
+                                            <img
+                                                className="dropdown-menu-item-img"
+                                                src="https://cdn-icons-png.flaticon.com/128/2989/2989849.png"
+                                                alt="YourChannel"
+                                            />
+                                            <p className="dropdown-menu-item-text">
+                                                Your channel
+                                            </p>
+                                        </div>
+                                    </Link>
+                                    <div
+                                        className="dropdown-menu-item"
+                                        onClick={toggleTheme}
+                                    >
+                                        <img
+                                            className="dropdown-menu-item-img"
+                                            src="https://cdn-icons-png.flaticon.com/128/12377/12377255.png"
+                                            alt="Toogle Theme"
+                                        />
+                                        <p className="dropdown-menu-item-text">
+                                            Appearance:{" "}
+                                            {theme === "light"
+                                                ? "Light"
+                                                : "Dark"}
+                                        </p>
+                                    </div>
+                                    <div className="dropdown-menu-item">
+                                        <img
+                                            className="dropdown-menu-item-img"
+                                            src="https://cdn-icons-png.flaticon.com/128/2838/2838912.png"
+                                            alt="Location"
+                                        />
+                                        <p className="dropdown-menu-item-text">
+                                            Location: {user.location}
+                                        </p>
+                                    </div>
+                                    <Link
+                                        to="/settings"
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <div className="dropdown-menu-item">
+                                            <img
+                                                className="dropdown-menu-item-img"
+                                                src="https://cdn-icons-png.flaticon.com/128/2040/2040504.png"
+                                                alt="Settings"
+                                            />
+                                            <p className="dropdown-menu-item-text">
+                                                Settings
+                                            </p>
+                                        </div>
+                                    </Link>
+                                    <Link
+                                        to="/login?type=logout"
+                                        style={{ textDecoration: "none" }}
+                                    >
+                                        <div className="dropdown-menu-item">
+                                            <img
+                                                className="dropdown-menu-item-img"
+                                                src="https://cdn-icons-png.flaticon.com/128/12377/12377255.png"
+                                                alt="Logout"
+                                            />
+                                            <p className="dropdown-menu-item-text">
+                                                Logout
+                                            </p>
+                                        </div>
+                                    </Link>
+                                </div>
+                            )}
                         </>
                     ) : (
                         <>

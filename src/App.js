@@ -14,13 +14,12 @@ import Category from "./Category";
 import Search from "./Search";
 import Login from "./Login";
 import History from "./History";
+import Likedvideos from "./Likedvideos";
 
 import "./App.css";
 
 function App() {
-    const [crntuser, setCrntuser] = useState(
-        Cookies.get("username") || "Guest"
-    );
+    const [crntuser, setCrntuser] = useState("Guest");
     const [menutype, setMenutype] = useState("Full");
     const [toggle, clickedtoggle] = useState(0);
     const [login, setlogin] = useState(false);
@@ -29,9 +28,19 @@ function App() {
         clickedtoggle((prev) => prev + 1);
     };
 
+    const getUserFromCookie = () => {
+        const userCookie = Cookies.get("user");
+        try {
+            return userCookie ? JSON.parse(userCookie) : "Guest";
+        } catch (error) {
+            console.error("Error parsing user cookie:", error.message);
+            return "Guest";
+        }
+    };
+
     useEffect(() => {
-        setCrntuser(Cookies.get("username") || "Guest");
-    }, [Cookies.get("username")]);
+        setCrntuser(getUserFromCookie());
+    }, [Cookies.get("user")]);
 
     return (
         <Router>
@@ -94,6 +103,10 @@ function App() {
                             <Route
                                 path="/history"
                                 element={<History user={crntuser} />}
+                            />
+                            <Route
+                                path="/likedvideos"
+                                element={<Likedvideos user={crntuser} />}
                             />
                             <Route
                                 path="/login"
