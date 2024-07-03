@@ -9,7 +9,6 @@
     width: 950px;
 }
 
-
 .watchpage::-webkit-scrollbar {
     display: none;
 }
@@ -32,6 +31,10 @@
     margin-right: 5px;
 }
 
+.namensubs b {
+    color: var(--text-color);
+}
+
 .title {
     font-size: 17px;
     font-weight: 700;
@@ -45,7 +48,7 @@
 
 /* Buttons */
 
-.subscribe_btn {
+.subscribe {
     background-color: var(--text-color);
     color: var(--background-color);
     border: none;
@@ -58,9 +61,19 @@
     vertical-align: middle;
 }
 
-.subscribe_btn:hover {
+.subscribe:hover {
     background-color: var(--alt-color);
-    color: var(--text_color);
+    color: var(--text-color);
+}
+
+.ed {
+    background-color: var(--text2-color);
+    color: var(--background-color);
+}
+
+.ed:hover {
+    background-color: var(--text-color);
+    color: var(--background-color);
 }
 
 .like_btn {

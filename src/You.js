@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "./You.css";
-import Cookies from "js-cookie";
 
 const You = (params) => {
     const [data, setData] = useState("");
@@ -10,20 +9,20 @@ const You = (params) => {
     // const [typeShort, setType] = useState(0);
     const serverurl = process.env.REACT_APP_SERVER_URL;
 
-    const user_channel_id = Cookies.get("channel_id");
+    const user = params.user;
     useEffect(() => {
         const fetchData = async () => {
             await axios
-                .get(`${serverurl}/yourchannel?channel_id=${user_channel_id}`)
+                .get(`${serverurl}/yourchannel?channel_id=${user.channel_id}`)
                 .then((response) => {
-                    setData(response.data);
+                    setData(response.data.channel[0]);
                 })
                 .catch((error) => {
                     console.log("Error in fetching: ", error.message);
                 });
         };
         fetchData();
-    }, []);
+    }, [user]);
 
     // function formatNumber(num) {
     //     if (num >= 1000000) {
@@ -39,15 +38,19 @@ const You = (params) => {
         <>
             {params.user !== "Guest" ? (
                 <>
-                    {data.channel ? (
+                    {data ? (
                         <div className="outer">
-                            {data.channel[0].channel_banner !== "N/A" ? (
-                                <div className="banner">
-                                    <img
-                                        alt="channel_banner"
-                                        src={data.channel[0].channel_banner}
-                                    />
-                                </div>
+                            {data.channel_banner ? (
+                                data.channel_banner !== "N/A" ? (
+                                    <div className="banner">
+                                        <img
+                                            alt="channel_banner"
+                                            src={data.channel_banner}
+                                        />
+                                    </div>
+                                ) : (
+                                    ""
+                                )
                             ) : (
                                 ""
                             )}
@@ -55,18 +58,16 @@ const You = (params) => {
                                 <img
                                     className="mypic"
                                     alt="Profile"
-                                    src={data.channel[0].channel_icon}
+                                    src={data.channel_icon}
                                 />
                                 <div className="details">
-                                    <p className="name">
-                                        {data.channel[0].channel_name}
-                                    </p>
+                                    <p className="name">{data.channel_name}</p>
                                     <Link
                                         to="/yourchannel"
                                         style={{ textDecoration: "none" }}
                                     >
                                         <p className="id">
-                                            {data.channel[0].custom_url}
+                                            {data.custom_url}
                                             {" • "}
                                             view Channel
                                         </p>

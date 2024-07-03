@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./Shortbox.css";
 import axios from "axios";
-import Videoplayer from "./Videoplayer";
+import Shortplayer from "./Shortplayer";
 
 const Shortbox = (params) => {
+    const [data, setData] = useState("");
+    const [shortdata, setShortdata] = useState(null);
+    const [stream_url, setStream_url] = useState("");
+    const [active, setActive] = useState(false);
+
+    const serverurl = process.env.REACT_APP_SERVER_URL;
     function formatNumber(num) {
         if (num >= 1000000) {
             return (num / 1000000).toFixed(1) + "M";
@@ -14,39 +20,13 @@ const Shortbox = (params) => {
         }
     }
 
-    const [data, setData] = useState("");
-    const [shorts, setShorts] = useState([]);
-    const serverurl = process.env.REACT_APP_SERVER_URL;
-
-    let crntshort = 4;
-
     useEffect(() => {
-        const fetchShorts = async () => {
-            if (params.data.shorts_vIds) {
-                await axios
-                    .get(
-                        `${serverurl}/getvideobyid?video_id=` +
-                            params.data.shorts_vIds[crntshort].video_id
-                    )
-                    .then((response) => {
-                        setShorts(response.data);
-                    })
-                    .catch((error) => {
-                        console.log("Error in fetching: ", error.message);
-                    });
-            }
-        };
-        fetchShorts();
-    }, [crntshort, params.data.shorts_vIds]);
-
-    const [i, seti] = useState(true);
-    useEffect(() => {
-        if (i === true && shorts.video) {
+        if (params.short) {
             const fetchstreamURL = async () => {
                 await axios
                     .get(
-                        `${serverurl}/get-stream-url?video_id=` +
-                            (await shorts.video[0].video_id)
+                        `https://flaskapp-production-9eb3.up.railway.app/get-short-url?video_id=` +
+                            params.short.video_id
                     )
                     .then((response) => {
                         setData(response.data);
@@ -56,13 +36,21 @@ const Shortbox = (params) => {
                     });
             };
             fetchstreamURL();
-            seti(false);
         }
-    }, [i, shorts.video]);
+    }, [params.short.video_id]);
+
+    useEffect(() => {
+        setActive(params.active);
+    }, [params.active, params]);
+
+    useEffect(() => {
+        setShortdata(params.short);
+        setStream_url(data.stream_url || "");
+    }, [data, params.short]);
 
     return (
         <div className="shortsbox">
-            <Videoplayer type="short" streamUrl={data.streamUrl} />
+            <Shortplayer type="short" streamUrl={stream_url} active={active} />
             <div className="short-btns">
                 <div className="shorts-btn">
                     <img
@@ -70,11 +58,7 @@ const Shortbox = (params) => {
                         src="https://cdn-icons-png.flaticon.com/128/739/739231.png"
                     />
                 </div>
-                <p>
-                    {shorts.video
-                        ? formatNumber(shorts.video[0].likes)
-                        : "Like"}
-                </p>
+                <p>{shortdata ? formatNumber(shortdata.likes) : "Like"}</p>
 
                 <div className="shorts-btn">
                     <img
@@ -109,11 +93,8 @@ const Shortbox = (params) => {
                 <p>More</p>
 
                 <div className="profile-btn">
-                    {shorts.video ? (
-                        <img
-                            alt="short-btn"
-                            src={shorts.video[0].channel_icon}
-                        />
+                    {shortdata ? (
+                        <img alt="short-btn" src={shortdata.channel_icon} />
                     ) : (
                         ""
                     )}

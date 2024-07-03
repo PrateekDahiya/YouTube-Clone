@@ -45,7 +45,8 @@
     width: 100%;
 }
 
-.form-box input {
+.form-box input,
+.form-box textarea {
     width: 60vh;
     height: 4vh;
     padding: 10px;
@@ -79,7 +80,8 @@
     text-align: left;
 }
 
-.form-box input::placeholder {
+.form-box input::placeholder,
+.form-box textarea::placeholder {
     color: var(--text-color);
 }
 
@@ -126,4 +128,20 @@
     padding-left: 20px;
     margin: 0;
     text-wrap: balance;
+}
+
+.pass-eye-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.pass-eye {
+    position: relative;
+    left: -40px;
+    margin: 0;
+    padding: 0;
+    width: 20px;
+    filter: var(--image-filter);
+    cursor: pointer;
 }

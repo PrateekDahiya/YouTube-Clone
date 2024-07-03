@@ -1,45 +1,35 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import { Link } from "react-router-dom";
-import Cookies from "js-cookie";
 import axios from "axios";
-import Cardloading from "./Cardloading";
 import "./Subscription.css";
 
 const Subscription = (params) => {
     const [videos, setVideos] = useState([]);
     const [typeShort, setType] = useState(0);
     const serverurl = process.env.REACT_APP_SERVER_URL;
-    const user_channel_id = Cookies.get("channel_id");
+    const user = params.user;
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios
-                .get(
-                    `${serverurl}/subscriptions?isShort=${typeShort}&user_id=${user_channel_id}`
-                )
-                .then((response) => {
-                    setVideos(response.data);
-                })
-                .catch((error) => {
-                    console.log("Error in fetching: ", error.message);
-                });
+            try {
+                const response = await axios.get(
+                    `${serverurl}/subscriptions?isShort=${typeShort}&user_id=${user.channel_id}`
+                );
+                setVideos(response.data);
+            } catch (error) {
+                console.log("Error in fetching: ", error.message);
+            }
         };
         fetchData();
-    }, [typeShort]);
+    }, [typeShort, user.channel_id, serverurl, user]);
 
     return (
         <>
             {params.user !== "Guest" ? (
                 <div className="subsbox">
-                    <div className="heading">
-                        <img
-                            className="subsicon"
-                            src="https://cdn-icons-png.flaticon.com/128/825/825636.png"
-                            alt="Subscriptions"
-                        />
-                        <p className="subsheading">Subscriptions</p>
-                    </div>
+                    <h1>Subscriptions</h1>
+                    <h3>Latest</h3>
                     <div className="menus">
                         <p
                             className={
@@ -64,15 +54,15 @@ const Subscription = (params) => {
                             Shorts
                         </p>
                     </div>
-                    <div className="cards">
-                        {videos.data ? (
-                            videos.data.map((item) => (
+                    {videos.data ? (
+                        <div className="cards">
+                            {videos.data.map((item) => (
                                 <Card key={item.video_id} data={item} />
-                            ))
-                        ) : (
-                            <></>
-                        )}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                 </div>
             ) : (
                 <div className="guestuser">

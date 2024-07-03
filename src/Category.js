@@ -2,23 +2,21 @@ import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-import Cardloading from "./Cardloading";
 import "./Category.css";
 
 const Category = (params) => {
     const locationHook = useLocation();
-
-    function Heading(string) {
-        if (!string) return "";
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
     const [typeShort, setType] = useState(0);
     const [data, setdata] = useState([]);
     const serverurl = process.env.REACT_APP_SERVER_URL;
     const [category, setCategory] = useState(
         new URLSearchParams(locationHook.search).get("category")
     );
-
+    const user = params.user;
+    function Heading(string) {
+        if (!string) return "";
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
     useEffect(() => {
         const currentCategory = new URLSearchParams(locationHook.search).get(
             "category"
@@ -44,7 +42,7 @@ const Category = (params) => {
                 });
         };
         fetchData();
-    }, [typeShort, category]);
+    }, [typeShort, category, user]);
 
     return (
         <>
@@ -85,7 +83,7 @@ const Category = (params) => {
                     <div>
                         <hr className="line"></hr>
                     </div>
-                    <div className="cards">
+                    <div className="cards category">
                         {data.videos.map((item) => (
                             <Card key={item.video_id} data={item} />
                         ))}

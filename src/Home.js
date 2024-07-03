@@ -14,6 +14,7 @@ const Home = (params) => {
     );
     const [page_no, setpage_no] = useState(1);
     const [startlistner, setstartlistner] = useState(false);
+    const user = params.user;
 
     useEffect(() => {
         const currentpage = new URLSearchParams(locationHook.pathname);
@@ -40,7 +41,7 @@ const Home = (params) => {
         };
 
         fetchData();
-    }, [page, page_no]);
+    }, [page_no, user]);
 
     const handleScroll = async () => {
         const cards = document.getElementsByClassName("cards")[0];

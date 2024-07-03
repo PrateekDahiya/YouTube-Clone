@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Login.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 
@@ -10,12 +9,15 @@ const PASSWORD_REGEX =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%])[a-zA-Z0-9!@#$%]{8,24}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const ALPHANUMERIC_REGEX = /^[a-zA-Z0-9]+$/;
+const CHANNEL_ID_REGEX = /^UC[a-zA-Z0-9-_]{22}$/;
 
 function Login(params) {
     const [email, setEmail] = useState("");
     const [validEmail, setValidEmail] = useState(false);
     const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showCPassword, setShowCPassword] = useState(false);
     const [validPassword, setValidPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
     const [username, setUsername] = useState("");
@@ -42,16 +44,40 @@ function Login(params) {
     const [channel_desc, setChannel_desc] = useState("");
     const [allValid4login, setAllValid4login] = useState(false);
     const [allValid4reg, setAllValid4reg] = useState(false);
+    const [feedback, setFeedback] = useState("");
+    const [reqchannelid, setReqchannelid] = useState("");
+    const [validChannelid, setValidChannelid] = useState(false);
+    const [channelidError, setChannelidError] = useState("");
     const queryParams = new URLSearchParams(window.location.search);
     const type = queryParams.get("type");
     const serverurl = process.env.REACT_APP_SERVER_URL;
 
-    const [i, seti] = useState(type === "register" ? 0 : 8);
+    const [i, seti] = useState(
+        type === "register" ? 0 : type === "feedback" ? 10 : 8
+    );
 
     const handleNext = async (e) => {
         e.preventDefault();
         seti(i + 1);
     };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleCPasswordVisibility = () => {
+        setShowCPassword(!showCPassword);
+    };
+
+    useEffect(() => {
+        if (type === "logout") {
+            const LogOut = () => {
+                Cookies.remove("user");
+                window.location.href = "/";
+            };
+            LogOut();
+        }
+    }, [type]);
 
     function sanitizeForSQL(input) {
         return input.replace(/'/g, "''");
@@ -94,68 +120,61 @@ function Login(params) {
         }
     }
 
-    const handleSubmit = async (e, type) => {
-        if (type === "login") {
-            const hashpass = stringToHash(password);
-            await axios
-                .get(`${serverurl}/login`, {
-                    params: {
-                        username: username,
-                        email: email,
-                        hashpass: hashpass,
-                    },
-                })
-                .then(async (response) => {
-                    console.log("Response data:", await response.data);
-                    Cookies.set(
-                        "channel_icon",
-                        response.data.user.channel_icon,
-                        {
-                            expires: 30,
-                        }
-                    );
-                    Cookies.set("userid", response.data.user.user_id, {
-                        expires: 30,
-                    });
-                    Cookies.set("username", response.data.user.username, {
-                        expires: 30,
-                    });
-                    Cookies.set("channel_id", response.data.user.channel_id, {
-                        expires: 30,
-                    });
-                    Cookies.set("email", response.data.user.email, {
-                        expires: 30,
-                    });
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
-        }
+    const setCookie = (user) => {
+        Cookies.set("user", JSON.stringify(user), { expires: 30 });
+        localStorage.setItem("iswatchlater", "true");
+        localStorage.setItem("ishistory", "true");
+        localStorage.setItem("islikedvideos", "true");
+        localStorage.setItem("isShorts", "true");
+    };
 
-        if (type === "register") {
-            const hashpass = stringToHash(password);
-            const fnamefix = sanitizeForSQL(firstname);
-            const lnamefix = sanitizeForSQL(lastname);
-            const chl_namefix = sanitizeForSQL(channel_name);
-            const chl_descfix = sanitizeForSQL(channel_desc);
-            await axios
-                .post(`${serverurl}/register`, {
+    const handleSubmit = async (e, type) => {
+        const hashpass = stringToHash(password);
+        try {
+            if (type === "login") {
+                const response = await axios.get(`${serverurl}/login`, {
+                    params: { username, email, hashpass },
+                });
+                setCookie(response.data.user);
+                return true;
+            }
+
+            if (type === "register") {
+                const requestData = {
                     email,
                     username,
-                    fnamefix,
-                    lnamefix,
                     hashpass,
+                    fnamefix: sanitizeForSQL(firstname),
+                    lnamefix: sanitizeForSQL(lastname),
+                    chl_namefix: sanitizeForSQL(channel_name),
+                    chl_descfix: sanitizeForSQL(channel_desc),
                     DOB,
-                    chl_namefix,
-                    chl_descfix,
                     location,
-                })
-                .then((response) => {
-                    console.log("Response data:", response.data);
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                });
+                };
+                const response = await axios.post(
+                    `${serverurl}/register`,
+                    requestData
+                );
+                console.log("Response data:", response.data);
+                setCookie(response.data.user);
+                return true;
+            }
+
+            if (type === "feedback") {
+                const requestData = {
+                    name: firstname + " " + lastname,
+                    feedback: sanitizeForSQL(feedback),
+                    reqchannelid,
+                };
+                const response = await axios.post(
+                    `${serverurl}/feedback`,
+                    requestData
+                );
+                return response.data.sent;
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            return false;
         }
     };
 
@@ -231,6 +250,17 @@ function Login(params) {
     }, [DOB]);
 
     useEffect(() => {
+        setValidChannelid(
+            CHANNEL_ID_REGEX.test(reqchannelid) || reqchannelid === ""
+        );
+        setChannelidError(
+            CHANNEL_ID_REGEX.test(reqchannelid) || reqchannelid === ""
+                ? ""
+                : "Invalid Channel id. You can find it at Navigate to youtube channel > click on more details > share channel > copy channel id"
+        );
+    }, [DOB]);
+
+    useEffect(() => {
         setAllValid4login(
             (validEmail || email === "") &&
                 (validUsername || username === "") &&
@@ -261,12 +291,7 @@ function Login(params) {
     ]);
 
     return (
-        <div
-            className="login-box"
-            onLoad={() => {
-                params.onClick("hidden");
-            }}
-        >
+        <div className="login-box">
             <div className="form-box">
                 <div className="form-box-left">
                     <img
@@ -275,7 +300,13 @@ function Login(params) {
                         src="https://cdn-icons-png.flaticon.com/128/1384/1384060.png"
                     />
                     <p className="box-head">
-                        {i >= 7 ? "Sign in" : "Create a Youtube Account"}
+                        {i >= 7 && i < 10
+                            ? "Sign in"
+                            : i < 7
+                            ? "Create a Youtube Account"
+                            : i >= 10
+                            ? "Give your Precious Feedback"
+                            : ""}
                     </p>
                     <p className="box-desc">
                         {i === 0
@@ -300,6 +331,10 @@ function Login(params) {
                             ? "Enter your Email"
                             : i === 9
                             ? "Enter your Password"
+                            : i === 10
+                            ? "Give your Feedback"
+                            : i === 11
+                            ? "Enter Channel Id"
                             : ""}
                     </p>
                 </div>
@@ -475,35 +510,77 @@ function Login(params) {
                         }}
                     >
                         <div className="inputdata">
-                            <input
-                                className={validPassword ? "valid" : "invalid"}
-                                type="password"
-                                value={password}
-                                id="password"
-                                autoComplete="off"
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Password"
-                                aria-invalid={validPassword ? "false" : "true"}
-                                required
-                                autoFocus
-                            />
+                            <div className="pass-eye-box">
+                                <input
+                                    className={
+                                        validPassword ? "valid" : "invalid"
+                                    }
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    id="password"
+                                    autoComplete="off"
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    placeholder="Password"
+                                    aria-invalid={
+                                        validPassword ? "false" : "true"
+                                    }
+                                    required
+                                    autoFocus
+                                />
+                                {showPassword ? (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
+                                        alt="show pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                ) : (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
+                                        alt="hide pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                )}
+                            </div>
+
                             {passwordError && (
                                 <p className="error">{passwordError}</p>
                             )}
                             <br></br>
-                            <input
-                                className={validMatch ? "valid" : "invalid"}
-                                type="password"
-                                value={confirm_password}
-                                id="confirm_password"
-                                autoComplete="off"
-                                onChange={(e) =>
-                                    setConfirmpassword(e.target.value)
-                                }
-                                aria-invalid={validMatch ? "false" : "true"}
-                                placeholder="Confirm Password"
-                                required
-                            />
+                            <div className="pass-eye-box">
+                                <input
+                                    className={validMatch ? "valid" : "invalid"}
+                                    type={showCPassword ? "text" : "password"}
+                                    value={confirm_password}
+                                    id="confirm_password"
+                                    autoComplete="off"
+                                    onChange={(e) =>
+                                        setConfirmpassword(e.target.value)
+                                    }
+                                    aria-invalid={validMatch ? "false" : "true"}
+                                    placeholder="Confirm Password"
+                                    required
+                                />
+                                {showCPassword ? (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
+                                        alt="show pass"
+                                        onClick={toggleCPasswordVisibility}
+                                    />
+                                ) : (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
+                                        alt="hide pass"
+                                        onClick={toggleCPasswordVisibility}
+                                    />
+                                )}
+                            </div>
+
                             {matchError && (
                                 <p className="error">{matchError}</p>
                             )}
@@ -572,6 +649,7 @@ function Login(params) {
                                 aria-invalid={validLocation ? "false" : "true"}
                                 aria-placeholder="Select your location"
                             >
+                                <option value="">Select your country</option>
                                 <option value="AF">Afghanistan</option>
                                 <option value="AL">Albania</option>
                                 <option value="DZ">Algeria</option>
@@ -902,10 +980,16 @@ function Login(params) {
                             <br></br>
                             <button
                                 type="submit"
-                                onClick={(e) => {
+                                onClick={async (e) => {
                                     if (allValid4reg) {
-                                        handleSubmit(e, "register");
-                                        window.location.href = "/login";
+                                        if (
+                                            (await handleSubmit(
+                                                e,
+                                                "register"
+                                            )) === true
+                                        ) {
+                                            window.location.href = "/login";
+                                        }
                                     }
                                 }}
                             >
@@ -1027,26 +1111,52 @@ function Login(params) {
                         }}
                     >
                         <div className="inputdata">
-                            <input
-                                className={validPassword ? "valid" : "invalid"}
-                                type="text"
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Password"
-                                required
-                                autoFocus
-                            />
+                            <div className="pass-eye-box">
+                                <input
+                                    className={
+                                        validPassword ? "valid" : "invalid"
+                                    }
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    placeholder="Password"
+                                    required
+                                    autoFocus
+                                />
+                                {showPassword ? (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
+                                        alt="show pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                ) : (
+                                    <img
+                                        className="pass-eye"
+                                        src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
+                                        alt="hide pass"
+                                        onClick={togglePasswordVisibility}
+                                    />
+                                )}
+                            </div>
+
                             {passwordError && (
                                 <p className="error">{passwordError}</p>
                             )}
                             <br></br>
                             <button
                                 type="submit"
-                                onClick={(e) => {
+                                onClick={async (e) => {
                                     if (validPassword && allValid4login) {
-                                        handleSubmit(e, "login");
-                                        window.location.href = "/home";
+                                        if (
+                                            (await handleSubmit(e, "login")) ===
+                                            true
+                                        ) {
+                                            window.location.href = "/home";
+                                        }
                                     }
                                 }}
                             >
@@ -1055,7 +1165,113 @@ function Login(params) {
                         </div>
                     </form>
                 ) : i === 10 ? (
-                    <></>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                        }}
+                    >
+                        <input
+                            className={validFirstname ? "valid" : "invalid"}
+                            type="text"
+                            value={firstname}
+                            id="firstname"
+                            onChange={(e) => setfirstname(e.target.value)}
+                            placeholder="First Name"
+                            autoComplete="off"
+                            aria-invalid={validFirstname ? "false" : "true"}
+                            required
+                            autoFocus
+                        />
+                        {firstnameError && (
+                            <p className="error">{firstnameError}</p>
+                        )}
+
+                        <input
+                            className={validLastname ? "valid" : "invalid"}
+                            type="text"
+                            value={lastname}
+                            id="lastname"
+                            autoComplete="off"
+                            onChange={(e) => setlastname(e.target.value)}
+                            placeholder="Last Name (Optional)"
+                            aria-invalid={validLastname ? "false" : "true"}
+                        />
+                        {lastnameError && (
+                            <p className="error">{lastnameError}</p>
+                        )}
+                        <div className="inputdata">
+                            <textarea
+                                className="valid"
+                                value={feedback}
+                                id="feedback"
+                                onChange={(e) => setFeedback(e.target.value)}
+                                placeholder="Feedback"
+                                required
+                                autoFocus
+                            />
+
+                            <br></br>
+                            <button
+                                className="next-btn"
+                                onClick={(e) => {
+                                    if (validFirstname) {
+                                        e.preventDefault();
+                                        seti(11);
+                                    }
+                                }}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </form>
+                ) : i === 11 ? (
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                        }}
+                    >
+                        <div className="inputdata">
+                            <input
+                                className={validChannelid ? "valid" : "invalid"}
+                                type="text"
+                                value={reqchannelid}
+                                id="channel_id"
+                                onChange={(e) =>
+                                    setReqchannelid(e.target.value)
+                                }
+                                placeholder="Channel id"
+                                autoFocus
+                            />
+                            {channelidError && (
+                                <p className="error">{channelidError}</p>
+                            )}
+
+                            <br></br>
+                            <button
+                                type="submit"
+                                onClick={async (e) => {
+                                    if (validChannelid) {
+                                        if (
+                                            (await handleSubmit(
+                                                e,
+                                                "feedback"
+                                            )) === true
+                                        ) {
+                                            window.location.href = `${
+                                                reqchannelid.length > 0
+                                                    ? `/channel?channel_id=${reqchannelid}`
+                                                    : "/home"
+                                            }`;
+                                        } else {
+                                            window.location.href = "/home";
+                                        }
+                                    }
+                                }}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </form>
                 ) : (
                     <></>
                 )}
