@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-import Cardloading from "./Cardloading";
 import "./Category.css";
 
 const Category = (params) => {
     const locationHook = useLocation();
-
     const [typeShort, setType] = useState(0);
     const [data, setdata] = useState([]);
     const serverurl = process.env.REACT_APP_SERVER_URL;
@@ -85,7 +83,7 @@ const Category = (params) => {
                     <div>
                         <hr className="line"></hr>
                     </div>
-                    <div className="cards">
+                    <div className="cards category">
                         {data.videos.map((item) => (
                             <Card key={item.video_id} data={item} />
                         ))}

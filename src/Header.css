@@ -160,6 +160,20 @@
     cursor: pointer;
     background-color: #d9d6d6;
 }
+
+.header-guest-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.toogle-theme {
+    width: 20px;
+    margin-right: 10px;
+    border-radius: 50%;
+    filter: var(--image-filter);
+}
+
 .toogle-theme:hover {
     cursor: pointer;
     background-color: #d9d6d6;

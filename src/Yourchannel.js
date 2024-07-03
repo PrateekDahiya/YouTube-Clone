@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Yourchannel.css";
-import Cookies from "js-cookie";
 import axios from "axios";
 import Cardloading from "./Cardloading";
 import Card from "./Card";

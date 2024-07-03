@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Login.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 
@@ -10,6 +9,7 @@ const PASSWORD_REGEX =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%])[a-zA-Z0-9!@#$%]{8,24}$/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const ALPHANUMERIC_REGEX = /^[a-zA-Z0-9]+$/;
+const CHANNEL_ID_REGEX = /^UC[a-zA-Z0-9-_]{22}$/;
 
 function Login(params) {
     const [email, setEmail] = useState("");
@@ -44,11 +44,17 @@ function Login(params) {
     const [channel_desc, setChannel_desc] = useState("");
     const [allValid4login, setAllValid4login] = useState(false);
     const [allValid4reg, setAllValid4reg] = useState(false);
+    const [feedback, setFeedback] = useState("");
+    const [reqchannelid, setReqchannelid] = useState("");
+    const [validChannelid, setValidChannelid] = useState(false);
+    const [channelidError, setChannelidError] = useState("");
     const queryParams = new URLSearchParams(window.location.search);
     const type = queryParams.get("type");
     const serverurl = process.env.REACT_APP_SERVER_URL;
 
-    const [i, seti] = useState(type === "register" ? 0 : 8);
+    const [i, seti] = useState(
+        type === "register" ? 0 : type === "feedback" ? 10 : 8
+    );
 
     const handleNext = async (e) => {
         e.preventDefault();
@@ -116,6 +122,10 @@ function Login(params) {
 
     const setCookie = (user) => {
         Cookies.set("user", JSON.stringify(user), { expires: 30 });
+        localStorage.setItem("iswatchlater", "true");
+        localStorage.setItem("ishistory", "true");
+        localStorage.setItem("islikedvideos", "true");
+        localStorage.setItem("isShorts", "true");
     };
 
     const handleSubmit = async (e, type) => {
@@ -148,6 +158,19 @@ function Login(params) {
                 console.log("Response data:", response.data);
                 setCookie(response.data.user);
                 return true;
+            }
+
+            if (type === "feedback") {
+                const requestData = {
+                    name: firstname + " " + lastname,
+                    feedback: sanitizeForSQL(feedback),
+                    reqchannelid,
+                };
+                const response = await axios.post(
+                    `${serverurl}/feedback`,
+                    requestData
+                );
+                return response.data.sent;
             }
         } catch (error) {
             console.error("Error:", error);
@@ -227,6 +250,17 @@ function Login(params) {
     }, [DOB]);
 
     useEffect(() => {
+        setValidChannelid(
+            CHANNEL_ID_REGEX.test(reqchannelid) || reqchannelid === ""
+        );
+        setChannelidError(
+            CHANNEL_ID_REGEX.test(reqchannelid) || reqchannelid === ""
+                ? ""
+                : "Invalid Channel id. You can find it at Navigate to youtube channel > click on more details > share channel > copy channel id"
+        );
+    }, [DOB]);
+
+    useEffect(() => {
         setAllValid4login(
             (validEmail || email === "") &&
                 (validUsername || username === "") &&
@@ -257,12 +291,7 @@ function Login(params) {
     ]);
 
     return (
-        <div
-            className="login-box"
-            onLoad={() => {
-                params.onClick("hidden");
-            }}
-        >
+        <div className="login-box">
             <div className="form-box">
                 <div className="form-box-left">
                     <img
@@ -271,7 +300,13 @@ function Login(params) {
                         src="https://cdn-icons-png.flaticon.com/128/1384/1384060.png"
                     />
                     <p className="box-head">
-                        {i >= 7 ? "Sign in" : "Create a Youtube Account"}
+                        {i >= 7 && i < 10
+                            ? "Sign in"
+                            : i < 7
+                            ? "Create a Youtube Account"
+                            : i >= 10
+                            ? "Give your Precious Feedback"
+                            : ""}
                     </p>
                     <p className="box-desc">
                         {i === 0
@@ -296,6 +331,10 @@ function Login(params) {
                             ? "Enter your Email"
                             : i === 9
                             ? "Enter your Password"
+                            : i === 10
+                            ? "Give your Feedback"
+                            : i === 11
+                            ? "Enter Channel Id"
                             : ""}
                     </p>
                 </div>
@@ -1126,7 +1165,113 @@ function Login(params) {
                         </div>
                     </form>
                 ) : i === 10 ? (
-                    <></>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                        }}
+                    >
+                        <input
+                            className={validFirstname ? "valid" : "invalid"}
+                            type="text"
+                            value={firstname}
+                            id="firstname"
+                            onChange={(e) => setfirstname(e.target.value)}
+                            placeholder="First Name"
+                            autoComplete="off"
+                            aria-invalid={validFirstname ? "false" : "true"}
+                            required
+                            autoFocus
+                        />
+                        {firstnameError && (
+                            <p className="error">{firstnameError}</p>
+                        )}
+
+                        <input
+                            className={validLastname ? "valid" : "invalid"}
+                            type="text"
+                            value={lastname}
+                            id="lastname"
+                            autoComplete="off"
+                            onChange={(e) => setlastname(e.target.value)}
+                            placeholder="Last Name (Optional)"
+                            aria-invalid={validLastname ? "false" : "true"}
+                        />
+                        {lastnameError && (
+                            <p className="error">{lastnameError}</p>
+                        )}
+                        <div className="inputdata">
+                            <textarea
+                                className="valid"
+                                value={feedback}
+                                id="feedback"
+                                onChange={(e) => setFeedback(e.target.value)}
+                                placeholder="Feedback"
+                                required
+                                autoFocus
+                            />
+
+                            <br></br>
+                            <button
+                                className="next-btn"
+                                onClick={(e) => {
+                                    if (validFirstname) {
+                                        e.preventDefault();
+                                        seti(11);
+                                    }
+                                }}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </form>
+                ) : i === 11 ? (
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                        }}
+                    >
+                        <div className="inputdata">
+                            <input
+                                className={validChannelid ? "valid" : "invalid"}
+                                type="text"
+                                value={reqchannelid}
+                                id="channel_id"
+                                onChange={(e) =>
+                                    setReqchannelid(e.target.value)
+                                }
+                                placeholder="Channel id"
+                                autoFocus
+                            />
+                            {channelidError && (
+                                <p className="error">{channelidError}</p>
+                            )}
+
+                            <br></br>
+                            <button
+                                type="submit"
+                                onClick={async (e) => {
+                                    if (validChannelid) {
+                                        if (
+                                            (await handleSubmit(
+                                                e,
+                                                "feedback"
+                                            )) === true
+                                        ) {
+                                            window.location.href = `${
+                                                reqchannelid.length > 0
+                                                    ? `/channel?channel_id=${reqchannelid}`
+                                                    : "/home"
+                                            }`;
+                                        } else {
+                                            window.location.href = "/home";
+                                        }
+                                    }
+                                }}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </form>
                 ) : (
                     <></>
                 )}

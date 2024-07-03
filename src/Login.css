@@ -45,7 +45,8 @@
     width: 100%;
 }
 
-.form-box input {
+.form-box input,
+.form-box textarea {
     width: 60vh;
     height: 4vh;
     padding: 10px;
@@ -79,7 +80,8 @@
     text-align: left;
 }
 
-.form-box input::placeholder {
+.form-box input::placeholder,
+.form-box textarea::placeholder {
     color: var(--text-color);
 }
 

@@ -15,6 +15,9 @@ import Search from "./Search";
 import Login from "./Login";
 import History from "./History";
 import Likedvideos from "./Likedvideos";
+import Watchlater from "./Watchlater";
+import Settings from "./Settings";
+import Trendings from "./Trendings";
 
 import "./App.css";
 
@@ -22,7 +25,11 @@ function App() {
     const [crntuser, setCrntuser] = useState("Guest");
     const [menutype, setMenutype] = useState("Full");
     const [toggle, clickedtoggle] = useState(0);
-    const [login, setlogin] = useState(false);
+    const [iswatchlater, setIswatchlater] = useState("true");
+    const [islikedvideos, setIslikedvideos] = useState("true");
+    const [ishistory, setIshistory] = useState("true");
+    const [isShorts, setIsShorts] = useState("true");
+
     const toggleMenu = (action) => {
         setMenutype(action);
         clickedtoggle((prev) => prev + 1);
@@ -37,6 +44,35 @@ function App() {
             return "Guest";
         }
     };
+
+    const handleSettings = (change, change_to) => {
+        console.log("came here");
+        if (change === "watchlater") {
+            setIswatchlater(change_to);
+            localStorage.setItem("iswatchlater", change_to);
+        } else if (change === "likedvideos") {
+            setIslikedvideos(change_to);
+            localStorage.setItem("islikedvideos", change_to);
+        } else if (change === "history") {
+            setIshistory(change_to);
+            localStorage.setItem("ishistory", change_to);
+        } else if (change === "shorts") {
+            setIsShorts(change_to);
+            localStorage.setItem("isShorts", change_to);
+        }
+    };
+
+    useEffect(() => {
+        const storedIshistory = localStorage.getItem("ishistory");
+        const storedIslikedvideos = localStorage.getItem("islikedvideos");
+        const storedIswatchlater = localStorage.getItem("iswatchlater");
+        const storedIsShorts = localStorage.getItem("isShorts");
+
+        setIshistory(storedIshistory);
+        setIslikedvideos(storedIslikedvideos);
+        setIswatchlater(storedIswatchlater);
+        setIsShorts(storedIsShorts);
+    }, [ishistory, islikedvideos, iswatchlater, isShorts]);
 
     useEffect(() => {
         setCrntuser(getUserFromCookie());
@@ -53,6 +89,7 @@ function App() {
                             menu={menutype}
                             togglecount={toggle}
                             user={crntuser}
+                            isShorts={isShorts}
                         />
                     </div>
 
@@ -101,18 +138,51 @@ function App() {
                                 element={<Category user={crntuser} />}
                             />
                             <Route
+                                path="/trendings"
+                                element={<Trendings user={crntuser} />}
+                            />
+                            <Route
                                 path="/history"
-                                element={<History user={crntuser} />}
+                                element={
+                                    <History
+                                        user={crntuser}
+                                        active={ishistory}
+                                    />
+                                }
                             />
                             <Route
                                 path="/likedvideos"
-                                element={<Likedvideos user={crntuser} />}
+                                element={
+                                    <Likedvideos
+                                        user={crntuser}
+                                        active={islikedvideos}
+                                    />
+                                }
                             />
                             <Route
-                                path="/login"
-                                element={<Login onClick={toggleMenu} />}
+                                path="/watchlater"
+                                element={
+                                    <Watchlater
+                                        user={crntuser}
+                                        active={iswatchlater}
+                                    />
+                                }
                             />
-
+                            <Route path="/login" element={<Login />} />
+                            <Route
+                                path="/settings"
+                                element={
+                                    <Settings
+                                        onClick={toggleMenu}
+                                        user={crntuser}
+                                        handleSettings={handleSettings}
+                                        ishistory={ishistory}
+                                        islikedvideos={islikedvideos}
+                                        iswatchlater={iswatchlater}
+                                        isShorts={isShorts}
+                                    />
+                                }
+                            />
                             <Route
                                 path="*"
                                 element={

@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, parsePath } from "react-router-dom";
 import "./History.css";
-import Cardloading from "./Cardloading";
 
 const History = (params) => {
     const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [user_chl_id, setUser_chl_id] = useState(null);
+    const [hoveredCards, setHoveredCards] = useState({}); // State to manage hovered cards
     const serverurl = process.env.REACT_APP_SERVER_URL;
-    const user = params.user;
+    const [updateonDelete, setUpdateonDelete] = useState(0);
 
     const compareTimestamps = (timestamp) => {
         const currentTime = new Date();
@@ -27,54 +27,82 @@ const History = (params) => {
     };
 
     useEffect(() => {
-        const storedHistory = JSON.parse(localStorage.getItem("history")) || [];
+        setUser_chl_id(params.user.channel_id);
+    }, [params.user]);
 
+    useEffect(() => {
         const fetchHistoryData = async () => {
-            if (storedHistory.length > 0) {
+            if (user_chl_id) {
                 try {
-                    const videosData = await Promise.all(
-                        storedHistory.map(async (item) => {
-                            if (item.video_id) {
-                                let vidData;
-                                await axios
-                                    .get(
-                                        `${serverurl}/getvideobyid?video_id=${item.video_id}`
-                                    )
-                                    .then((response) => {
-                                        vidData = response.data;
-                                    })
-                                    .catch((error) => {
-                                        console.log(
-                                            "Error in fetching: ",
-                                            error.message
-                                        );
-                                    });
-                                return {
-                                    video: vidData.video[0],
-                                    timestamp: item.timestamp,
-                                };
-                            }
-                            console.warn("Invalid history item:", item);
-                            return null;
-                        })
+                    const response = await axios.get(
+                        `${serverurl}/history?user_id=${user_chl_id}`
                     );
-                    setData(videosData.filter((item) => item !== null));
+                    setData(response.data.videos);
                 } catch (error) {
-                    console.error("Error fetching history data:", error);
+                    console.log("Error in fetching: ", error.message);
                 }
             }
-            setLoading(false);
         };
         fetchHistoryData();
-    }, [serverurl, user]);
+    }, [user_chl_id, serverurl, updateonDelete]);
+
+    const handleRemoveHistory = async (video_id) => {
+        const requestData = {
+            user_id: user_chl_id,
+            video_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/removefromhistory`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+        setUpdateonDelete((prev) => prev + 1);
+    };
+
+    const handleMouseEnter = (videoId) => {
+        setHoveredCards((prevHoveredCards) => ({
+            ...prevHoveredCards,
+            [videoId]: true,
+        }));
+    };
+
+    const handleMouseLeave = (videoId) => {
+        setHoveredCards((prevHoveredCards) => ({
+            ...prevHoveredCards,
+            [videoId]: false,
+        }));
+    };
 
     const renderCardsByTime = (timeCategory) => {
+        if (!Array.isArray(data) || data.length === 0) return [];
         return data
             .filter(
-                (item) => compareTimestamps(item.timestamp) === timeCategory
+                (item) => compareTimestamps(item.watched_time) === timeCategory
             )
             .map((item) => (
-                <Card key={item.video.video_id} data={item.video} />
+                <div
+                    key={item.video_id} // Ensure each card has a unique key
+                    className="history-card"
+                    onMouseEnter={() => handleMouseEnter(item.video_id)}
+                    onMouseLeave={() => handleMouseLeave(item.video_id)}
+                >
+                    <div
+                        className={`remove-history ${
+                            hoveredCards[item.video_id] ? "show" : ""
+                        }`}
+                        onClick={() => {
+                            handleRemoveHistory(item.video_id);
+                        }}
+                    >
+                        <img
+                            alt="remove-history"
+                            src="https://cdn-icons-png.flaticon.com/128/1828/1828778.png"
+                        />
+                        <span>Remove History</span>
+                    </div>
+                    <Card key={item.video_id} data={item} />
+                </div>
             ));
     };
 
@@ -90,12 +118,10 @@ const History = (params) => {
         <>
             {params.user !== "Guest" ? (
                 <>
-                    {loading ? (
-                        <></>
-                    ) : (
-                        <div className="history-outerbox">
-                            <h1>Watch History</h1>
-                            {categories.map(({ title, category }) => {
+                    <div className="history-outerbox">
+                        <h1>Watch History</h1>
+                        {data && params.active === "true" ? (
+                            categories.map(({ title, category }) => {
                                 const cards = renderCardsByTime(category);
                                 return cards.length > 0 ? (
                                     <div key={category}>
@@ -105,9 +131,15 @@ const History = (params) => {
                                         </div>
                                     </div>
                                 ) : null;
-                            })}
-                        </div>
-                    )}
+                            })
+                        ) : params.active === "false" ? (
+                            <h3>
+                                History Disabled. Enable it in General settings.
+                            </h3>
+                        ) : (
+                            <></>
+                        )}
+                    </div>
                 </>
             ) : (
                 <div className="guestuser">

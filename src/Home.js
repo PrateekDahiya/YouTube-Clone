@@ -41,7 +41,7 @@ const Home = (params) => {
         };
 
         fetchData();
-    }, [page, page_no, user]);
+    }, [page_no, user]);
 
     const handleScroll = async () => {
         const cards = document.getElementsByClassName("cards")[0];

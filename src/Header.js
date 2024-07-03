@@ -12,10 +12,20 @@ const Header = (params) => {
     const [page, setPage] = useState(locationHook.pathname);
     const user = params.user;
     const [isprofilemenu, setIsprofilemenu] = useState(false);
+    const [profilemenuhover, setProfilemenuhover] = useState(false);
 
     const toggleDropdown = () => {
         setIsprofilemenu(!isprofilemenu);
     };
+
+    useEffect(() => {
+        if (!profilemenuhover) {
+            const timer = setTimeout(() => {
+                setIsprofilemenu(false);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [isprofilemenu, profilemenuhover]);
 
     useEffect(() => {
         const currentpage = locationHook.pathname;
@@ -70,12 +80,14 @@ const Header = (params) => {
                         placeholder="Search"
                         className="search"
                     />
-                    <button type="submit" className="searchbutton">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
-                            alt="search"
-                        />
-                    </button>
+                    <Link to={query !== "" ? "/search?query=" + query : null}>
+                        <button type="submit" className="searchbutton">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
+                                alt="search"
+                            />
+                        </button>
+                    </Link>
                 </form>
             </div>
             <div className="profile">
@@ -99,7 +111,15 @@ const Header = (params) => {
                                 onClick={toggleDropdown}
                             />
                             {isprofilemenu && (
-                                <div className="dropdown-menu">
+                                <div
+                                    className="dropdown-menu"
+                                    onMouseEnter={() =>
+                                        setProfilemenuhover(true)
+                                    }
+                                    onMouseLeave={() =>
+                                        setProfilemenuhover(false)
+                                    }
+                                >
                                     <div className="profile-box">
                                         <img
                                             className="profile-box-img"
@@ -205,7 +225,13 @@ const Header = (params) => {
                             )}
                         </>
                     ) : (
-                        <>
+                        <div className="header-guest-menu">
+                            <img
+                                className="toogle-theme"
+                                src="https://cdn-icons-png.flaticon.com/128/12377/12377255.png"
+                                alt="Toogle Theme"
+                                onClick={toggleTheme}
+                            />
                             <Link
                                 to="/login"
                                 style={{ textDecoration: "none" }}
@@ -218,7 +244,7 @@ const Header = (params) => {
                                     Sign In
                                 </button>
                             </Link>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>

@@ -12,6 +12,7 @@ function Menu(params) {
     const serverurl = process.env.REACT_APP_SERVER_URL;
     const [menu, setMenu] = useState("Full");
     const [page, setPage] = useState(locationHook.pathname);
+    const [isShorts, setIsShorts] = useState("true");
     const user = params.user;
     useEffect(() => {
         const currentpage = locationHook.pathname;
@@ -19,7 +20,7 @@ function Menu(params) {
     }, [locationHook]);
 
     useEffect(() => {
-        if (page === "/login" || page === "/watch") {
+        if (page === "/login" || page === "/watch" || page === "/settings") {
             setMenu("Hidden");
         } else {
             setMenu("Full");
@@ -85,6 +86,10 @@ function Menu(params) {
         setSelectedItem(title);
     };
 
+    useEffect(() => {
+        setIsShorts(params.isShorts);
+    }, [params.isShorts]);
+
     return (
         <div className="Menu">
             {menu === "Narrow" ? (
@@ -97,14 +102,17 @@ function Menu(params) {
                         isSelected={selectedItem === "Home"}
                         onClick={() => handleItemClick("Home")}
                     />
-                    <Menuitem
-                        imgpath="https://cdn-icons-png.flaticon.com/128/7264/7264012.png"
-                        title="Shorts"
-                        head="/shorts"
-                        menu="Hidden"
-                        isSelected={selectedItem === "Shorts"}
-                        onClick={() => handleItemClick("Shorts")}
-                    />
+                    {isShorts === "true" ? (
+                        <Menuitem
+                            imgpath="https://cdn-icons-png.flaticon.com/128/7264/7264012.png"
+                            title="Shorts"
+                            head="/shorts"
+                            menu="Hidden"
+                            isSelected={selectedItem === "Shorts"}
+                            onClick={() => handleItemClick("Shorts")}
+                        />
+                    ) : null}
+
                     <Menuitem
                         imgpath="https://cdn-icons-png.flaticon.com/128/2989/2989849.png"
                         title="Subs"
@@ -134,13 +142,16 @@ function Menu(params) {
                             isSelected={selectedItem === "Home"}
                             onClick={() => handleItemClick("Home")}
                         />
-                        <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/7264/7264012.png"
-                            title="Shorts"
-                            head="/shorts"
-                            isSelected={selectedItem === "Shorts"}
-                            onClick={() => handleItemClick("Shorts")}
-                        />
+                        {isShorts === "true" ? (
+                            <Menuitem
+                                imgpath="https://cdn-icons-png.flaticon.com/128/7264/7264012.png"
+                                title="Shorts"
+                                head="/shorts"
+                                isSelected={selectedItem === "Shorts"}
+                                onClick={() => handleItemClick("Shorts")}
+                            />
+                        ) : null}
+
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/2989/2989849.png"
                             title="Subscriptions"
@@ -177,14 +188,6 @@ function Menu(params) {
                         />
                         {params.user !== "Guest" ? (
                             <>
-                                <Menuitem
-                                    imgpath="https://cdn-icons-png.flaticon.com/128/4043/4043797.png"
-                                    title="Playlists"
-                                    head="/playlists"
-                                    isSelected={selectedItem === "Playlists"}
-                                    onClick={() => handleItemClick("Playlists")}
-                                />
-
                                 <Menuitem
                                     imgpath="https://cdn-icons-png.flaticon.com/128/15469/15469061.png"
                                     title="Watch later"
@@ -261,7 +264,7 @@ function Menu(params) {
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/1946/1946485.png"
                             title="Trending"
-                            head="/trending"
+                            head="/trendings"
                             isSelected={selectedItem === "Trending"}
                             onClick={() => handleItemClick("Trending")}
                         />
@@ -331,23 +334,9 @@ function Menu(params) {
                             onClick={() => handleItemClick("Settings")}
                         />
                         <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/2814/2814368.png"
-                            title="Report history"
-                            head="/reporthistory"
-                            isSelected={selectedItem === "Report history"}
-                            onClick={() => handleItemClick("Report history")}
-                        />
-                        <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/471/471664.png"
-                            title="Help"
-                            head="/help"
-                            isSelected={selectedItem === "Help"}
-                            onClick={() => handleItemClick("Help")}
-                        />
-                        <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/813/813419.png"
                             title="Send feedback"
-                            head="/sendfeedback"
+                            head="/login?type=feedback"
                             isSelected={selectedItem === "Send feedback"}
                             onClick={() => handleItemClick("Send feedback")}
                         />

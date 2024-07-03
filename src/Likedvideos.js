@@ -27,17 +27,20 @@ const Likedvideos = (params) => {
     }, [user]);
 
     return (
-        <>
-            {data.videos ? (
+        <div className="history-outerbox">
+            <h1>Liked Videos</h1>
+            {data.videos && params.active === "true" ? (
                 <div className="cards">
                     {data.videos.map((item) => (
                         <Card key={item.video_id} data={item} />
                     ))}
                 </div>
+            ) : params.active === "false" ? (
+                <h3>Liked Videos Disabled. Enable it in General settings.</h3>
             ) : (
                 <></>
             )}
-        </>
+        </div>
     );
 };
 

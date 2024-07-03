@@ -1,38 +1,104 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
 import "./Card.css";
 
 const Card = (params) => {
     const [linkto, setLinkto] = useState();
-
     const serverurl = process.env.REACT_APP_SERVER_URL;
+    const [video_id, setVideo_id] = useState(null);
+    const [user_chl_id, setUser_chl_id] = useState(null);
+    const [user, setCrntuser] = useState("Guest");
+    const [isHovered, setIsHovered] = useState(false);
+    const [watchlater, setWatchlater] = useState(false);
+    const [forTrending, setForTrending] = useState(false);
+
+    const getUserFromCookie = () => {
+        const userCookie = Cookies.get("user");
+        try {
+            return userCookie ? JSON.parse(userCookie) : "Guest";
+        } catch (error) {
+            console.error("Error parsing user cookie:", error.message);
+            return "Guest";
+        }
+    };
+
+    useEffect(() => {
+        setCrntuser(getUserFromCookie());
+    }, [Cookies.get("user")]);
 
     const addHistory = async () => {
-        try {
-            const video_id = params.data.video_id;
-            let history = JSON.parse(localStorage.getItem("history")) || [];
-            const existingIndex = history.findIndex(
-                (item) => item.video_id === video_id
-            );
+        const requestData = {
+            user_id: user_chl_id,
+            video_id,
+        };
 
-            if (existingIndex !== -1) {
-                history.splice(existingIndex, 1);
-            }
-
-            history.unshift({
-                video_id: video_id,
-                timestamp: new Date().toISOString(),
-            });
-
-            localStorage.setItem("history", JSON.stringify(history));
-        } catch (error) {
-            console.log(error);
-        }
+        const response = await axios.post(
+            `${serverurl}/addtohistory`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
     };
 
     const handleClick = () => {
         addHistory();
     };
+
+    const addwatchlater = async () => {
+        const requestData = {
+            user_id: user_chl_id,
+            video_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/addtowatchlater`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+        setWatchlater(true);
+    };
+
+    const removewatchlater = async () => {
+        const requestData = {
+            user_id: user_chl_id,
+            video_id,
+        };
+
+        const response = await axios.post(
+            `${serverurl}/removefromwatchlater`,
+            requestData
+        );
+        console.log("Response Data:", response.data);
+
+        setWatchlater(false);
+    };
+
+    useEffect(() => {
+        const iswatchlater = async () => {
+            const response = await axios.get(
+                `${serverurl}/iswatchlater?user_id=${user_chl_id}&video_id=${video_id}`
+            );
+            setWatchlater(response.data.watchlater);
+        };
+        if (user_chl_id && video_id && isHovered) {
+            iswatchlater();
+        }
+    }, [user_chl_id, video_id, watchlater, isHovered]);
+
+    const handleWatchlater = () => {
+        if (watchlater === true) {
+            removewatchlater();
+        } else {
+            addwatchlater();
+        }
+    };
+
+    useEffect(() => {
+        setVideo_id(params.data.video_id);
+        setForTrending(params.forTrending || false);
+        setUser_chl_id(user.channel_id);
+    }, [params.data.video_id, user, params.forTrending]);
 
     const getDateDifference = (date1, date2) => {
         if (!date1 || !date2) return "";
@@ -117,44 +183,88 @@ const Card = (params) => {
     }, []);
 
     return (
-        <Link to={linkto} onClick={handleClick} className="card">
-            <img
-                className="thumbnail"
-                src={params.data.thumbnail_link || ""}
-                alt={params.data.title || ""}
-            />
-            <span className="duration">
-                {formatDuration(params.data.duration)}
-            </span>
-            <div className="info">
-                <Link to={`channel?channel_id=${params.data.channel_id}`}>
-                    <img
-                        src={params.data.channel_icon || ""}
-                        alt={params.data.channel_name || ""}
-                    />
-                </Link>
-                <div className="text">
-                    <p className="videotitle">
-                        {params.data.title.length >= 100
-                            ? params.data.title.substring(0, 50) + "..."
-                            : params.data.title || ""}
-                    </p>
-                    <Link
-                        className="channelname"
-                        to={`/channel?channel_id=${params.data.channel_id}`}
-                    >
-                        {params.data.channel_name || ""}
+        <Link
+            to={linkto}
+            onClick={handleClick}
+            className={`card ${forTrending ? "trending-card" : ""}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {isHovered ? (
+                <div
+                    className={`watch-later ${isHovered ? "show" : ""}`}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        handleWatchlater();
+                    }}
+                >
+                    {watchlater ? (
+                        <img
+                            alt="removeWatchlater"
+                            src="https://cdn-icons-png.flaticon.com/128/15641/15641363.png"
+                        />
+                    ) : (
+                        <img
+                            alt="addWatchlater"
+                            src="https://cdn-icons-png.flaticon.com/128/15469/15469061.png"
+                        />
+                    )}
+                </div>
+            ) : (
+                <></>
+            )}
+            <div>
+                <img
+                    className="thumbnail"
+                    src={params.data.thumbnail_link || ""}
+                    alt={params.data.title || ""}
+                />
+            </div>
+            <div>
+                {!forTrending ? (
+                    <span className="duration">
+                        {formatDuration(params.data.duration)}
+                    </span>
+                ) : null}
+
+                <div className="info">
+                    <Link to={`/channel?channel_id=${params.data.channel_id}`}>
+                        <img
+                            src={params.data.channel_icon || ""}
+                            alt={params.data.channel_name || ""}
+                        />
                     </Link>
-                    <div className="viewsntime">
-                        <p className="views">
-                            {formatNumber(params.data.views)} views &bull;
+                    <div className="text">
+                        <p className="videotitle">
+                            {params.data.title.length >= 100
+                                ? params.data.title.substring(0, 50) + "..."
+                                : params.data.title || ""}
                         </p>
-                        <p className="time">
-                            {getDateDifference(
-                                new Date(),
-                                new Date(params.data.upload_time)
-                            ) + " ago"}
-                        </p>
+                        <Link
+                            className="channelname"
+                            to={`/channel?channel_id=${params.data.channel_id}`}
+                        >
+                            {params.data.channel_name || ""}
+                        </Link>
+                        <div className="viewsntime">
+                            <p className="views">
+                                {formatNumber(params.data.views)} views &bull;
+                            </p>
+                            <p className="time">
+                                {getDateDifference(
+                                    new Date(),
+                                    new Date(params.data.upload_time)
+                                ) + " ago"}
+                            </p>
+                        </div>
+                        {forTrending ? (
+                            <p className="short-desc-trend">
+                                {params.data.short_desc.length >= 300
+                                    ? params.data.short_desc.substring(0, 200) +
+                                      "..."
+                                    : params.data.short_desc || ""}
+                            </p>
+                        ) : null}
                     </div>
                 </div>
             </div>
