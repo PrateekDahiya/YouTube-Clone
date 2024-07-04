@@ -29,9 +29,13 @@ const Search = () => {
         setPage(currentpage);
     }, [locationHook]);
     return (
-        <>
+        <div className="searchPage">
+            <p className="channel-find-error ">
+                *If you can't find the channel, please send feedback with the
+                channel ID to add it instantly.
+            </p>
             {data.videos ? (
-                <div className="cards">
+                <div className="cards search-cards">
                     {data.videos.map((item) => (
                         <Card key={item.video_id} data={item} />
                     ))}
@@ -39,7 +43,7 @@ const Search = () => {
             ) : (
                 <></>
             )}
-        </>
+        </div>
     );
 };
 

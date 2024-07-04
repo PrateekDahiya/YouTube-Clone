@@ -139,20 +139,43 @@
     flex-direction: row;
 }
 
+.dual-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 
+.dual-form input {
+    margin-left: 20px;
+    height: 20px;
+    width: 50%;
+    padding: 2px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--alt-color);
+    color: var(--text-color);
+}
 
 .dual-edit-btn {
     cursor: pointer;
     margin-right: 10px;
+    margin-left: 10px;
     border: none;
-    border-radius: 10px;
+    border-radius: 2px;
     color: var(--text-color);
     background-color: var(--alt-color);
 }
 
 .dual-edit-btn:hover {
     background-color: var(--text2-color);
-    color: var(--highlight-color);
+    color: var(--text-color);
+}
+
+.delete-btn {
+    background-color: rgba(255, 0, 0, 0.8);
+    font-weight: 500;
+    padding: 5px;
+    border-radius: 0;
 }
 
 .dual-profile-img {

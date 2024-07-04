@@ -40,9 +40,13 @@ function App() {
         try {
             return userCookie ? JSON.parse(userCookie) : "Guest";
         } catch (error) {
-            console.error("Error parsing user cookie:", error.message);
             return "Guest";
         }
+    };
+
+    const setUser = (user) => {
+        setCrntuser(user);
+        Cookies.set("user", JSON.stringify(user), { expires: 30 });
     };
 
     const handleSettings = (change, change_to) => {
@@ -180,6 +184,7 @@ function App() {
                                         islikedvideos={islikedvideos}
                                         iswatchlater={iswatchlater}
                                         isShorts={isShorts}
+                                        setUser={setUser}
                                     />
                                 }
                             />

@@ -1,17 +1,22 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import { ThemeContext } from "./ThemeContext";
 
 import "./Settings.css";
 
 const Settings = (params) => {
     const [settings_index, setSettings_index] = useState(0);
-    const [editEmail, setEditEmail] = useState(false);
     const [iswatchlater, setIswatchlater] = useState("true");
     const [islikedvideos, setIslikedvideos] = useState("true");
     const [ishistory, setIshistory] = useState("true");
     const [isShorts, setIsShorts] = useState("true");
+    const [editIndex, setEditIndex] = useState(-1);
+    const [newValue, setNewValue] = useState("");
+    const [deleteChannel, setDeleteChannel] = useState(false);
     const { theme, toggleTheme } = useContext(ThemeContext);
+
+    const serverurl = process.env.REACT_APP_SERVER_URL;
     const user = params.user;
 
     const userDetails = [
@@ -33,6 +38,105 @@ const Settings = (params) => {
         { label: "Channel Keywords", value: user.keywords },
     ];
 
+    const updateCookies = async () => {
+        try {
+            const response = await axios.post(`${serverurl}/getUser`, {
+                user_id: user.user_id,
+            });
+            if (response.status === 200) {
+                const user = response.data.user[0];
+                params.setUser(user);
+            }
+        } catch (error) {
+            console.error("Error updating cookies:", error);
+        }
+    };
+
+    const handleSubmit = async (label, value) => {
+        const userlabels = {
+            Name: "username",
+            Email: "email",
+            DOB: "DOB",
+        };
+
+        const channellabels = {
+            "Channel name": "channel_name",
+            "Channel description": "short_desc",
+            Location: "location",
+            "Total Views": "total_views",
+            Subscribers: "subscribers",
+            "Channel Icon": "channel_icon",
+            "Channel Banner": "channel_banner",
+            "Channel Keywords": "keywords",
+        };
+
+        const userfieldName = userlabels[label];
+        const channelfieldName = channellabels[label];
+
+        if (userfieldName !== undefined) {
+            const requestData = {
+                field: userfieldName,
+                value: value,
+                user_id: user.user_id,
+            };
+
+            try {
+                const response = await axios.post(
+                    `${serverurl}/updateUserDetail`,
+                    requestData
+                );
+                if (response.status === 200) {
+                    console.log("Update successful");
+                    setEditIndex(-1);
+                } else {
+                    console.log("Update failed");
+                }
+            } catch (error) {
+                console.error("Error updating data:", error);
+            }
+        }
+        if (channelfieldName !== undefined) {
+            const requestData = {
+                field: channelfieldName,
+                value: value,
+                channel_id: user.channel_id,
+            };
+
+            try {
+                const response = await axios.post(
+                    `${serverurl}/updateChannelDetail`,
+                    requestData
+                );
+                if (response.status === 200) {
+                    console.log("Update successful");
+                    setEditIndex(-1);
+                } else {
+                    console.log("Update failed");
+                }
+            } catch (error) {
+                console.error("Error updating data:", error);
+            }
+        }
+        if (label === "Delete Channel" && value == "Delete Channel") {
+            try {
+                const response = await axios.post(`${serverurl}/deleteUser`, {
+                    channel_id: user.channel_id,
+                    user_id: user.user_id,
+                });
+                if (response.status === 200) {
+                    console.log("Delete successful");
+                    await updateCookies();
+                    window.location.href = "/";
+                } else {
+                    console.log("Update failed");
+                }
+            } catch (error) {
+                console.error("Error updating data:", error);
+            }
+        }
+        updateCookies();
+    };
+
     useEffect(() => {
         document.body.className = theme;
     }, [theme]);
@@ -48,6 +152,14 @@ const Settings = (params) => {
         params.ishistory,
         params.isShorts,
     ]);
+
+    useEffect(() => {
+        setEditIndex(-1);
+    }, [settings_index]);
+
+    useEffect(() => {
+        setNewValue("");
+    }, [settings_index, editIndex]);
 
     return (
         <div className="settings-page">
@@ -413,14 +525,55 @@ const Settings = (params) => {
                                             {detail.label}
                                         </h3>
                                     </div>
-                                    <div className="dual-part2 dual-edit">
-                                        <p className="dual-text">
-                                            <button className="dual-edit-btn">
-                                                Edit
-                                            </button>
-                                            {detail.value}
-                                        </p>
-                                    </div>
+                                    {editIndex === index ? (
+                                        <div className="dual-part2 dual-form">
+                                            <p className="dual-text">
+                                                <input
+                                                    type="text"
+                                                    value={newValue}
+                                                    placeholder={detail.value}
+                                                    onChange={(e) => {
+                                                        setNewValue(
+                                                            e.target.value
+                                                        );
+                                                    }}
+                                                />
+                                                <button
+                                                    className="dual-edit-btn"
+                                                    onClick={() => {
+                                                        handleSubmit(
+                                                            detail.label,
+                                                            newValue
+                                                        );
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    className="dual-edit-btn"
+                                                    onClick={() => {
+                                                        setEditIndex(-1);
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="dual-part2 dual-edit">
+                                            <p className="dual-text">
+                                                <button
+                                                    className="dual-edit-btn"
+                                                    onClick={() => {
+                                                        setEditIndex(index);
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                {detail.value}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -442,14 +595,55 @@ const Settings = (params) => {
                                             {detail.label}
                                         </h3>
                                     </div>
-                                    <div className="dual-part2 dual-edit">
-                                        <p className="dual-text">
-                                            <button className="dual-edit-btn">
-                                                Edit
-                                            </button>
-                                            {detail.value}
-                                        </p>
-                                    </div>
+                                    {editIndex === index ? (
+                                        <div className="dual-part2 dual-form">
+                                            <p className="dual-text">
+                                                <input
+                                                    type="text"
+                                                    value={newValue}
+                                                    placeholder={detail.value}
+                                                    onChange={(e) => {
+                                                        setNewValue(
+                                                            e.target.value
+                                                        );
+                                                    }}
+                                                />
+                                                <button
+                                                    className="dual-edit-btn"
+                                                    onClick={() => {
+                                                        handleSubmit(
+                                                            detail.label,
+                                                            newValue
+                                                        );
+                                                    }}
+                                                >
+                                                    OK
+                                                </button>
+                                                <button
+                                                    className="dual-edit-btn"
+                                                    onClick={() => {
+                                                        setEditIndex(-1);
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="dual-part2 dual-edit">
+                                            <p className="dual-text">
+                                                <button
+                                                    className="dual-edit-btn"
+                                                    onClick={() => {
+                                                        setEditIndex(index);
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                {detail.value}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -483,6 +677,59 @@ const Settings = (params) => {
                                 <div className="dual-part2">
                                     <p className="dual-text">{user.user_id}</p>
                                 </div>
+                            </div>
+                            <div className="dual-outer">
+                                <div className="dual-part1">
+                                    <h3 className="dual-headings">
+                                        Delete Account
+                                    </h3>
+                                </div>
+                                {deleteChannel === true ? (
+                                    <div className="dual-part2 dual-form">
+                                        <p className="dual-text">
+                                            <input
+                                                type="text"
+                                                value={newValue}
+                                                placeholder="Enter 'Delete Channel' to confirm"
+                                                onChange={(e) => {
+                                                    setNewValue(e.target.value);
+                                                }}
+                                            />
+                                            <button
+                                                className="dual-edit-btn"
+                                                onClick={() => {
+                                                    handleSubmit(
+                                                        "Delete Channel",
+                                                        newValue
+                                                    );
+                                                }}
+                                            >
+                                                OK
+                                            </button>
+                                            <button
+                                                className="dual-edit-btn"
+                                                onClick={() => {
+                                                    setDeleteChannel(false);
+                                                }}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="dual-part2 dual-edit">
+                                        <p className="dual-text">
+                                            <button
+                                                className="dual-edit-btn delete-btn"
+                                                onClick={() => {
+                                                    setDeleteChannel(true);
+                                                }}
+                                            >
+                                                Delete Account
+                                            </button>
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

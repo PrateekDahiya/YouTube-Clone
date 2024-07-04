@@ -69,17 +69,21 @@ function Menu(params) {
     }, [menu]);
 
     useEffect(() => {
-        const fetchsubs = async () => {
-            await axios
-                .get(`${serverurl}/get-subs?user_id=${await user.channel_id}`)
-                .then((response) => {
-                    setsubsData(response.data);
-                })
-                .catch((error) => {
-                    console.log("Error in fetching: ", error.message);
-                });
-        };
-        fetchsubs();
+        if (params.user !== "Guest") {
+            const fetchsubs = async () => {
+                await axios
+                    .get(
+                        `${serverurl}/get-subs?user_id=${await user.channel_id}`
+                    )
+                    .then((response) => {
+                        setsubsData(response.data);
+                    })
+                    .catch((error) => {
+                        console.log("Error in fetching: ", error.message);
+                    });
+            };
+            fetchsubs();
+        }
     }, [user, page]);
 
     const handleItemClick = (title) => {
@@ -326,13 +330,16 @@ function Menu(params) {
                         />
                     </div>
                     <div className="menudiv">
-                        <Menuitem
-                            imgpath="https://cdn-icons-png.flaticon.com/128/2040/2040504.png"
-                            title="Settings"
-                            head="/settings"
-                            isSelected={selectedItem === "Settings"}
-                            onClick={() => handleItemClick("Settings")}
-                        />
+                        {params.user !== "Guest" ? (
+                            <Menuitem
+                                imgpath="https://cdn-icons-png.flaticon.com/128/2040/2040504.png"
+                                title="Settings"
+                                head="/settings"
+                                isSelected={selectedItem === "Settings"}
+                                onClick={() => handleItemClick("Settings")}
+                            />
+                        ) : null}
+
                         <Menuitem
                             imgpath="https://cdn-icons-png.flaticon.com/128/813/813419.png"
                             title="Send feedback"

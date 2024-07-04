@@ -48,6 +48,7 @@ function Login(params) {
     const [reqchannelid, setReqchannelid] = useState("");
     const [validChannelid, setValidChannelid] = useState(false);
     const [channelidError, setChannelidError] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const queryParams = new URLSearchParams(window.location.search);
     const type = queryParams.get("type");
     const serverurl = process.env.REACT_APP_SERVER_URL;
@@ -135,8 +136,15 @@ function Login(params) {
                 const response = await axios.get(`${serverurl}/login`, {
                     params: { username, email, hashpass },
                 });
-                setCookie(response.data.user);
-                return true;
+                if (response.data.success) {
+                    setCookie(response.data.user);
+                    return { success: true };
+                } else {
+                    return {
+                        success: false,
+                        message: response.data.message || "Login failed",
+                    };
+                }
             }
 
             if (type === "register") {
@@ -155,9 +163,14 @@ function Login(params) {
                     `${serverurl}/register`,
                     requestData
                 );
-                console.log("Response data:", response.data);
-                setCookie(response.data.user);
-                return true;
+                if (response.data.success) {
+                    return { success: true };
+                } else {
+                    return {
+                        success: false,
+                        message: response.data.message || "Login failed",
+                    };
+                }
             }
 
             if (type === "feedback") {
@@ -170,11 +183,14 @@ function Login(params) {
                     `${serverurl}/feedback`,
                     requestData
                 );
-                return response.data.sent;
+                return { success: response.data.sent };
             }
         } catch (error) {
             console.error("Error:", error);
-            return false;
+            return {
+                success: false,
+                message: error.message || "An error occurred",
+            };
         }
     };
 
@@ -976,19 +992,25 @@ function Login(params) {
                                 placeholder="Channel Description (Optional)"
                                 autoFocus
                             />
-
+                            {errorMessage && (
+                                <div className="error">{errorMessage}</div>
+                            )}
                             <br></br>
                             <button
                                 type="submit"
                                 onClick={async (e) => {
                                     if (allValid4reg) {
-                                        if (
-                                            (await handleSubmit(
-                                                e,
-                                                "register"
-                                            )) === true
-                                        ) {
+                                        const result = await handleSubmit(
+                                            e,
+                                            "register"
+                                        );
+                                        if (result.success) {
                                             window.location.href = "/login";
+                                        } else {
+                                            setErrorMessage(
+                                                result.message ||
+                                                    "Registration failed"
+                                            );
                                         }
                                     }
                                 }}
@@ -1146,16 +1168,25 @@ function Login(params) {
                             {passwordError && (
                                 <p className="error">{passwordError}</p>
                             )}
+                            {errorMessage && (
+                                <div className="error">{errorMessage}</div>
+                            )}
                             <br></br>
                             <button
                                 type="submit"
                                 onClick={async (e) => {
                                     if (validPassword && allValid4login) {
-                                        if (
-                                            (await handleSubmit(e, "login")) ===
-                                            true
-                                        ) {
+                                        const result = await handleSubmit(
+                                            e,
+                                            "login"
+                                        );
+                                        if (result.success) {
                                             window.location.href = "/home";
+                                        } else {
+                                            setErrorMessage(
+                                                result.message ||
+                                                    "Invalid credentials"
+                                            );
                                         }
                                     }
                                 }}
@@ -1245,24 +1276,30 @@ function Login(params) {
                             {channelidError && (
                                 <p className="error">{channelidError}</p>
                             )}
+                            {errorMessage && (
+                                <div className="error">{errorMessage}</div>
+                            )}
 
                             <br></br>
                             <button
                                 type="submit"
                                 onClick={async (e) => {
                                     if (validChannelid) {
-                                        if (
-                                            (await handleSubmit(
-                                                e,
-                                                "feedback"
-                                            )) === true
-                                        ) {
+                                        const result = await handleSubmit(
+                                            e,
+                                            "feedback"
+                                        );
+                                        if (result.success) {
                                             window.location.href = `${
                                                 reqchannelid.length > 0
                                                     ? `/channel?channel_id=${reqchannelid}`
                                                     : "/home"
                                             }`;
                                         } else {
+                                            setErrorMessage(
+                                                result.message ||
+                                                    "Feedback submission failed"
+                                            );
                                             window.location.href = "/home";
                                         }
                                     }

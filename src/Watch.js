@@ -32,6 +32,7 @@ const Watch = (params) => {
     }
 
     const addSubscriber = async () => {
+        if (user === "Guest") return;
         const requestData = {
             user_chl_id,
             channel_id,
@@ -46,6 +47,7 @@ const Watch = (params) => {
     };
 
     const unsub = async () => {
+        if (user === "Guest") return;
         const requestData = {
             user_chl_id,
             channel_id,
@@ -61,6 +63,7 @@ const Watch = (params) => {
     };
 
     const addlike = async () => {
+        if (user === "Guest") return;
         const requestData = {
             user_id: user_chl_id,
             video_id,
@@ -75,6 +78,7 @@ const Watch = (params) => {
     };
 
     const removelike = async () => {
+        if (user === "Guest") return;
         const requestData = {
             user_id: user_chl_id,
             video_id,

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import "./Card.css";
 
 const Card = (params) => {
+    const navigate = useNavigate();
     const [linkto, setLinkto] = useState();
     const serverurl = process.env.REACT_APP_SERVER_URL;
     const [video_id, setVideo_id] = useState(null);
@@ -19,7 +20,6 @@ const Card = (params) => {
         try {
             return userCookie ? JSON.parse(userCookie) : "Guest";
         } catch (error) {
-            console.error("Error parsing user cookie:", error.message);
             return "Guest";
         }
     };
@@ -29,6 +29,7 @@ const Card = (params) => {
     }, [Cookies.get("user")]);
 
     const addHistory = async () => {
+        if (user === "Guest") return;
         const requestData = {
             user_id: user_chl_id,
             video_id,
@@ -46,6 +47,7 @@ const Card = (params) => {
     };
 
     const addwatchlater = async () => {
+        if (user === "Guest") return;
         const requestData = {
             user_id: user_chl_id,
             video_id,
@@ -60,6 +62,7 @@ const Card = (params) => {
     };
 
     const removewatchlater = async () => {
+        if (user === "Guest") return;
         const requestData = {
             user_id: user_chl_id,
             video_id,
@@ -171,6 +174,10 @@ const Card = (params) => {
         }
     };
 
+    const handleChannelClick = (e, channelId) => {
+        navigate(`/channel?channel_id=${channelId}`);
+    };
+
     useEffect(() => {
         const setlink = async () => {
             setLinkto(
@@ -228,24 +235,29 @@ const Card = (params) => {
                 ) : null}
 
                 <div className="info">
-                    <Link to={`/channel?channel_id=${params.data.channel_id}`}>
-                        <img
-                            src={params.data.channel_icon || ""}
-                            alt={params.data.channel_name || ""}
-                        />
-                    </Link>
+                    <img
+                        src={params.data.channel_icon || ""}
+                        alt={params.data.channel_name || ""}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handleChannelClick(e, params.data.channel_id);
+                        }}
+                    />
                     <div className="text">
                         <p className="videotitle">
                             {params.data.title.length >= 100
                                 ? params.data.title.substring(0, 50) + "..."
                                 : params.data.title || ""}
                         </p>
-                        <Link
+                        <div
                             className="channelname"
-                            to={`/channel?channel_id=${params.data.channel_id}`}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleChannelClick(e, params.data.channel_id);
+                            }}
                         >
                             {params.data.channel_name || ""}
-                        </Link>
+                        </div>
                         <div className="viewsntime">
                             <p className="views">
                                 {formatNumber(params.data.views)} views &bull;
