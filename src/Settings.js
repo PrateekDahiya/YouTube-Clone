@@ -188,7 +188,7 @@ const Settings = (params) => {
                             <h4>Account</h4>
                             <h1>
                                 Choose how you appear and what you see on
-                                YouTube
+                                VidVault
                             </h1>
                             <p className="parts-para">
                                 Signed in as {user.email}
@@ -196,10 +196,10 @@ const Settings = (params) => {
                         </div>
                         <div className="your-account parts">
                             <h2 className="parts-heading">
-                                Your YouTube channel
+                                Your VidVault channel
                             </h2>
                             <p className="parts-para">
-                                This is your public presence on YouTube. You
+                                This is your public presence on VidVault. You
                                 need a channel to upload your own videos,
                                 comment on videos, or create playlists.
                             </p>
@@ -215,6 +215,7 @@ const Settings = (params) => {
                                             <img
                                                 alt="profile"
                                                 className="dual-profile-img"
+                                                title={user.channel_name}
                                                 src={user.channel_icon}
                                             />
                                         </div>
@@ -256,9 +257,9 @@ const Settings = (params) => {
                     <div className="settings-div general">
                         <div className="setting-div-heading-box parts">
                             <h4>General settings</h4>
-                            <h1>Customize your YouTube experience</h1>
+                            <h1>Customize your VidVault experience</h1>
                             <p className="parts-para">
-                                Welcome to your personalized YouTube. Tailor
+                                Welcome to your personalized VidVault. Tailor
                                 your theme and playback settings. Choose your
                                 language, manage privacy, and explore playback
                                 options for the perfect viewing experience.
@@ -652,7 +653,7 @@ const Settings = (params) => {
                     <div className="settings-div advanced">
                         <div className="setting-div-heading-box parts">
                             <h4>Advanced settings</h4>
-                            <h1>Set up YouTube exactly how you want it</h1>
+                            <h1>Set up VidVault exactly how you want it</h1>
                             <p className="parts-para">
                                 Signed in as {user.email}
                             </p>

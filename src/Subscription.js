@@ -70,16 +70,18 @@ const Subscription = (params) => {
                         className="bigicon"
                         src="https://cdn-icons-png.flaticon.com/128/2989/2989849.png"
                         alt="subscriptions"
+                        title="Subscriptions"
                     />
                     <h2>Don't miss new videos</h2>
                     <h3>
-                        Sign in to see updates from your favorite YouTube
+                        Sign in to see updates from your favorite VidVault
                         channels
                     </h3>
                     <Link to="/login" style={{ textDecoration: "none" }}>
                         <button className="sign_in">
                             <img
                                 className="guesticon"
+                                title="Sign In"
                                 src="https://cdn-icons-png.flaticon.com/128/1077/1077063.png"
                                 alt="user"
                             />

@@ -30,7 +30,7 @@
 
 .channel-find-error {
     color: var(--error-msg);
-    width: 100%;
+    width: fit-content;
     font-size: 13px;
     padding-left: 20px;
     margin: 10px;

@@ -4,12 +4,15 @@ import "./Watch.css";
 import axios from "axios";
 import Videoplayer from "./Videoplayer";
 import Cardloading from "./Cardloading";
+import Card from "./Card";
 
 const Watch = (params) => {
     const [data, setData] = useState("");
     const [isliked, setisliked] = useState(false);
     const [isdisliked, setIsdisliked] = useState(false);
     const [watchdata, setwatchdata] = useState({});
+    const [relateddata, setRelateddata] = useState(null);
+    const [show_desc, setshow_desc] = useState(false);
     const serverurl = process.env.REACT_APP_SERVER_URL;
     const user = params.user;
     const [issubed, setissubed] = useState(false);
@@ -30,6 +33,53 @@ const Watch = (params) => {
             return num.toString();
         }
     }
+
+    function formatISODate(isoDate) {
+        const date = new Date(isoDate);
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return date.toLocaleDateString("en-US", options);
+    }
+
+    const getDateDifference = (date1, date2) => {
+        if (!date1 || !date2) return "";
+
+        const differenceMs = Math.abs(date1 - date2);
+
+        const millisecondsInSecond = 1000;
+        const millisecondsInMinute = millisecondsInSecond * 60;
+        const millisecondsInHour = millisecondsInMinute * 60;
+        const millisecondsInDay = millisecondsInHour * 24;
+        const millisecondsInWeek = millisecondsInDay * 7;
+        const millisecondsInMonth = millisecondsInDay * 30;
+        const millisecondsInYear = millisecondsInDay * 365;
+
+        const years = Math.floor(differenceMs / millisecondsInYear);
+        const months = Math.floor(differenceMs / millisecondsInMonth);
+        const weeks = Math.floor(differenceMs / millisecondsInWeek);
+        const days = Math.floor(differenceMs / millisecondsInDay);
+        const hours = Math.floor(differenceMs / millisecondsInHour);
+        const minutes = Math.floor(differenceMs / millisecondsInMinute);
+        const seconds = Math.floor(differenceMs / millisecondsInSecond);
+
+        let result = "";
+        if (years > 0) {
+            result += years + (years === 1 ? " year" : " years");
+        } else if (months > 0) {
+            result += months + (months === 1 ? " month" : " months");
+        } else if (weeks > 0) {
+            result += weeks + (weeks === 1 ? " week" : " weeks");
+        } else if (days > 0) {
+            result += days + (days === 1 ? " day" : " days");
+        } else if (hours > 0) {
+            result += hours + (hours === 1 ? " hour" : " hours");
+        } else if (minutes > 0) {
+            result += minutes + (minutes === 1 ? " minute" : " minutes");
+        } else if (seconds > 0) {
+            result += seconds + (seconds === 1 ? " second" : " seconds");
+        }
+
+        return result;
+    };
 
     const addSubscriber = async () => {
         if (user === "Guest") return;
@@ -114,13 +164,27 @@ const Watch = (params) => {
         }
     }, [user_chl_id, channel_id, video_id]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            await axios
+                .get(`${serverurl}/related-videos?video_id=${video_id}`)
+                .then((response) => {
+                    setRelateddata(response.data);
+                })
+                .catch((error) => {
+                    console.log("Error in fetching: ", error.message);
+                });
+        };
+        fetchData();
+    }, [video_id]);
+
     const [i, seti] = useState(true);
     useEffect(() => {
         if (i === true) {
             const fetchstreamURL = async () => {
                 await axios
                     .get(
-                        `https://flaskapp-production-9eb3.up.railway.app/get_video_url${window.location.search}`
+                        `https://flaskapp-ugds.onrender.com/get_video_url${window.location.search}`
                     )
                     .then((response) => {
                         setData(response.data);
@@ -183,7 +247,7 @@ const Watch = (params) => {
 
     return (
         <>
-            {watchdata.title ? (
+            {watchdata.title && relateddata ? (
                 <div className="watchpage">
                     <div className="vplayer">
                         <div className="video-player">
@@ -195,6 +259,7 @@ const Watch = (params) => {
                                 handleQualityChange={handleQualityChange}
                                 qualityoptions={qualityoptions}
                                 video_resolution={video_resolution}
+                                thumbnail={watchdata.thumbnail_link}
                             />
                         </div>
 
@@ -208,6 +273,7 @@ const Watch = (params) => {
                                         <img
                                             className="channelicon"
                                             src={watchdata.channel_icon}
+                                            title="channel"
                                             alt="channel"
                                         />
                                     </Link>
@@ -261,11 +327,13 @@ const Watch = (params) => {
                                             <img
                                                 src="https://cdn-icons-png.flaticon.com/128/739/739231.png"
                                                 alt="liked"
+                                                title="Liked"
                                             />
                                         ) : (
                                             <img
                                                 src="https://cdn-icons-png.flaticon.com/128/126/126473.png"
                                                 alt="like"
+                                                title="Like"
                                             />
                                         )}
                                         {formatNumber(watchdata.likes)}
@@ -287,11 +355,13 @@ const Watch = (params) => {
                                             <img
                                                 src="https://cdn-icons-png.flaticon.com/128/880/880613.png"
                                                 alt="disliked"
+                                                title="Disliked"
                                             />
                                         ) : (
                                             <img
                                                 src="https://cdn-icons-png.flaticon.com/128/126/126504.png"
                                                 alt="dislike"
+                                                title="Dislike"
                                             />
                                         )}
                                     </button>
@@ -299,6 +369,7 @@ const Watch = (params) => {
                                         <img
                                             src="https://cdn-icons-png.flaticon.com/128/2958/2958783.png"
                                             alt="share"
+                                            title="Share"
                                         />
                                         Share
                                     </button>
@@ -306,17 +377,61 @@ const Watch = (params) => {
                                         <img
                                             src="https://cdn-icons-png.flaticon.com/128/9131/9131795.png"
                                             alt="download"
+                                            title="Download"
                                         />
                                         Download
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div className="description">
-                            <p>{watchdata.video_description}</p>
+                        <div
+                            className="video_details"
+                            onClick={() => {
+                                if (!show_desc) {
+                                    setshow_desc(true);
+                                }
+                            }}
+                        >
+                            <p className="video_views_upload_time">
+                                {formatNumber(watchdata.views)} views •{" "}
+                                {show_desc
+                                    ? formatISODate(watchdata.upload_time)
+                                    : getDateDifference(
+                                          new Date(),
+                                          new Date(watchdata.upload_time)
+                                      ) + " ago"}
+                            </p>
+                            {show_desc ? null : (
+                                <p className="more-btn">...more</p>
+                            )}
+                            {show_desc ? (
+                                <>
+                                    <p className="video_desc">
+                                        {watchdata.video_description}
+                                    </p>
+                                    <p
+                                        className="more-btn"
+                                        onClick={() => {
+                                            setshow_desc(false);
+                                        }}
+                                    >
+                                        Show less
+                                    </p>
+                                </>
+                            ) : null}
                         </div>
                     </div>
-                    <div className="relatedvideos"></div>
+                    <div className="relatedvideos">
+                        <div className="cards related-videos">
+                            {relateddata.videos.map((item) => (
+                                <Card
+                                    key={item.video_id}
+                                    data={item}
+                                    forrelated={true}
+                                />
+                            ))}
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <Cardloading page="watch" />

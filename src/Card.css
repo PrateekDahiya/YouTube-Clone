@@ -38,6 +38,12 @@
 .card .thumbnail {
     position: relative;
 }
+
+.card .forrelated-thumbnail {
+    width: 160px;
+    height: 120px;
+}
+
 .card .thumbnail:hover {
     border-radius: 0px;
 }

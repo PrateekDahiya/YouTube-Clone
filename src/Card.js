@@ -14,6 +14,7 @@ const Card = (params) => {
     const [isHovered, setIsHovered] = useState(false);
     const [watchlater, setWatchlater] = useState(false);
     const [forTrending, setForTrending] = useState(false);
+    const [forrelated, setForrelated] = useState(false);
 
     const getUserFromCookie = () => {
         const userCookie = Cookies.get("user");
@@ -100,8 +101,9 @@ const Card = (params) => {
     useEffect(() => {
         setVideo_id(params.data.video_id);
         setForTrending(params.forTrending || false);
+        setForrelated(params.forrelated || false);
         setUser_chl_id(user.channel_id);
-    }, [params.data.video_id, user, params.forTrending]);
+    }, [params.data.video_id, user, params.forTrending, params.forrelated]);
 
     const getDateDifference = (date1, date2) => {
         if (!date1 || !date2) return "";
@@ -193,7 +195,9 @@ const Card = (params) => {
         <Link
             to={linkto}
             onClick={handleClick}
-            className={`card ${forTrending ? "trending-card" : ""}`}
+            className={`card ${
+                forTrending || forrelated ? "trending-card" : ""
+            }`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -208,11 +212,13 @@ const Card = (params) => {
                     {watchlater ? (
                         <img
                             alt="removeWatchlater"
+                            title="Remove from Watch Later"
                             src="https://cdn-icons-png.flaticon.com/128/15641/15641363.png"
                         />
                     ) : (
                         <img
                             alt="addWatchlater"
+                            title="Add to Watch Later"
                             src="https://cdn-icons-png.flaticon.com/128/15469/15469061.png"
                         />
                     )}
@@ -220,29 +226,33 @@ const Card = (params) => {
             ) : (
                 <></>
             )}
-            <div>
-                <img
-                    className="thumbnail"
-                    src={params.data.thumbnail_link || ""}
-                    alt={params.data.title || ""}
-                />
-            </div>
-            <div>
-                {!forTrending ? (
+            <img
+                className={
+                    forrelated ? "thumbnail forrelated-thumbnail" : "thumbnail"
+                }
+                title={params.data.channel_name}
+                src={params.data.thumbnail_link || ""}
+                alt={params.data.title || ""}
+            />
+            <>
+                {forTrending || forrelated ? null : (
                     <span className="duration">
                         {formatDuration(params.data.duration)}
                     </span>
-                ) : null}
+                )}
 
                 <div className="info">
-                    <img
-                        src={params.data.channel_icon || ""}
-                        alt={params.data.channel_name || ""}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleChannelClick(e, params.data.channel_id);
-                        }}
-                    />
+                    {forrelated ? null : (
+                        <img
+                            src={params.data.channel_icon || ""}
+                            alt={params.data.channel_name || ""}
+                            title={params.data.channel_name || ""}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleChannelClick(e, params.data.channel_id);
+                            }}
+                        />
+                    )}
                     <div className="text">
                         <p className="videotitle">
                             {params.data.title.length >= 100
@@ -279,7 +289,7 @@ const Card = (params) => {
                         ) : null}
                     </div>
                 </div>
-            </div>
+            </>
         </Link>
     );
 };

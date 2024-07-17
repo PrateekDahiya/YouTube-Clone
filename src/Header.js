@@ -57,6 +57,7 @@ const Header = (params) => {
                     <img
                         src="https://cdn-icons-png.flaticon.com/128/1828/1828859.png"
                         alt="toggle-menu"
+                        title="Toggle Menu"
                     />
                 </button>
                 <Link to="/" className="youtube-btn">
@@ -64,7 +65,7 @@ const Header = (params) => {
                         src="https://cdn-icons-png.flaticon.com/128/1384/1384060.png"
                         alt="youtube"
                     />
-                    <p>YouTube</p>
+                    <p>VidVault</p>
                 </Link>
             </div>
             <div className="search">
@@ -85,6 +86,7 @@ const Header = (params) => {
                             <img
                                 src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
                                 alt="search"
+                                title="Search"
                             />
                         </button>
                     </Link>
@@ -98,15 +100,18 @@ const Header = (params) => {
                                 className="create"
                                 src="https://cdn-icons-png.flaticon.com/128/4189/4189286.png"
                                 alt="Create"
+                                title="Create"
                             />
                             <img
                                 className="notifications"
                                 src="https://cdn-icons-png.flaticon.com/128/2645/2645890.png"
                                 alt="Notifications"
+                                title="Notifications"
                             />
                             <img
                                 className="profilepic"
                                 src={user.channel_icon}
+                                title={user.username}
                                 alt="Profile"
                                 onClick={toggleDropdown}
                             />
@@ -230,6 +235,7 @@ const Header = (params) => {
                                 className="toogle-theme"
                                 src="https://cdn-icons-png.flaticon.com/128/12377/12377255.png"
                                 alt="Toogle Theme"
+                                title="Toogle Theme"
                                 onClick={toggleTheme}
                             />
                             <Link
@@ -240,6 +246,7 @@ const Header = (params) => {
                                     <img
                                         src="https://cdn-icons-png.flaticon.com/128/1077/1077063.png"
                                         alt="user"
+                                        title="Sign In"
                                     />
                                     Sign In
                                 </button>

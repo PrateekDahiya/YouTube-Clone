@@ -36,13 +36,15 @@
     filter: var(--image-filter);
     width: 30px;
     padding: 10px;
+    cursor: pointer;
 }
 
 .profile-btn {
     border-radius: 20px;
+    cursor: pointer;
 }
 
 .profile-btn img {
     margin-top: 5px;
-    width: 50px;
+    width: 40px;
 }

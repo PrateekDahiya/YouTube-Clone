@@ -42,6 +42,7 @@ const Trendings = (params) => {
                             className="caticon"
                             src="https://cdn-icons-png.flaticon.com/128/1946/1946430.png"
                             alt="trending"
+                            title="Trending"
                         />
                         <p className="trendheading">Trendings</p>
                     </div>

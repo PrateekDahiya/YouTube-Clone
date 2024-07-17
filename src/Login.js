@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import "./Login.css";
 import axios from "axios";
 import CryptoJS from "crypto-js";
@@ -49,6 +50,7 @@ function Login(params) {
     const [validChannelid, setValidChannelid] = useState(false);
     const [channelidError, setChannelidError] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [ishandlesubmit, setIshandlesubmit] = useState(false);
     const queryParams = new URLSearchParams(window.location.search);
     const type = queryParams.get("type");
     const serverurl = process.env.REACT_APP_SERVER_URL;
@@ -130,6 +132,10 @@ function Login(params) {
     };
 
     const handleSubmit = async (e, type) => {
+        if (ishandlesubmit) {
+            return;
+        }
+        setIshandlesubmit(true);
         const hashpass = stringToHash(password);
         try {
             if (type === "login") {
@@ -192,6 +198,7 @@ function Login(params) {
                 message: error.message || "An error occurred",
             };
         }
+        setIshandlesubmit(false);
     };
 
     useEffect(() => {
@@ -274,7 +281,7 @@ function Login(params) {
                 ? ""
                 : "Invalid Channel id. You can find it at Navigate to youtube channel > click on more details > share channel > copy channel id"
         );
-    }, [DOB]);
+    }, [reqchannelid]);
 
     useEffect(() => {
         setAllValid4login(
@@ -316,10 +323,10 @@ function Login(params) {
                         src="https://cdn-icons-png.flaticon.com/128/1384/1384060.png"
                     />
                     <p className="box-head">
-                        {i >= 7 && i < 10
+                        {i >= 8 && i < 10
                             ? "Sign in"
-                            : i < 7
-                            ? "Create a Youtube Account"
+                            : i < 8
+                            ? "Create a VidVault Account"
                             : i >= 10
                             ? "Give your Precious Feedback"
                             : ""}
@@ -550,6 +557,7 @@ function Login(params) {
                                         className="pass-eye"
                                         src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
                                         alt="show pass"
+                                        title="Show Password"
                                         onClick={togglePasswordVisibility}
                                     />
                                 ) : (
@@ -557,6 +565,7 @@ function Login(params) {
                                         className="pass-eye"
                                         src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
                                         alt="hide pass"
+                                        title="Hide Password"
                                         onClick={togglePasswordVisibility}
                                     />
                                 )}
@@ -585,6 +594,7 @@ function Login(params) {
                                         className="pass-eye"
                                         src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
                                         alt="show pass"
+                                        title="Show Password"
                                         onClick={toggleCPasswordVisibility}
                                     />
                                 ) : (
@@ -592,6 +602,7 @@ function Login(params) {
                                         className="pass-eye"
                                         src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
                                         alt="hide pass"
+                                        title="Hide Password"
                                         onClick={toggleCPasswordVisibility}
                                     />
                                 )}
@@ -1153,6 +1164,7 @@ function Login(params) {
                                         className="pass-eye"
                                         src="https://cdn-icons-png.flaticon.com/128/709/709612.png"
                                         alt="show pass"
+                                        title="Show Password"
                                         onClick={togglePasswordVisibility}
                                     />
                                 ) : (
@@ -1160,6 +1172,7 @@ function Login(params) {
                                         className="pass-eye"
                                         src="https://cdn-icons-png.flaticon.com/128/2767/2767146.png"
                                         alt="hide pass"
+                                        title="Hide Password"
                                         onClick={togglePasswordVisibility}
                                     />
                                 )}
@@ -1300,7 +1313,7 @@ function Login(params) {
                                                 result.message ||
                                                     "Feedback submission failed"
                                             );
-                                            window.location.href = "/home";
+                                            NavLink.replace("/home");
                                         }
                                     }
                                 }}

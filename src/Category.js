@@ -51,6 +51,7 @@ const Category = (params) => {
                     <div className="heading">
                         <img
                             className="caticon"
+                            title={Heading(data.category)}
                             src={data.caticon}
                             alt="category"
                         />

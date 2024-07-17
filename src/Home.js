@@ -23,25 +23,45 @@ const Home = (params) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios
-                .get(`${serverurl}/home?page=${page_no}`)
-                .then((response) => {
-                    setData((prev) =>
-                        prev === null
-                            ? response.data.videos
-                            : prev[0].video_id !==
-                              response.data.videos[0].video_id
-                            ? [...prev, ...response.data.videos]
-                            : prev
-                    );
-                })
-                .catch((error) => {
-                    console.log("Error in fetching: ", error.message);
-                });
+            if (user.channel_id) {
+                await axios
+                    .get(
+                        `${serverurl}/personalized-feed?page=${page_no}&user_id=${user.channel_id}`
+                    )
+                    .then((response) => {
+                        setData((prev) =>
+                            prev === null
+                                ? response.data.videos
+                                : prev[0].video_id !==
+                                  response.data.videos[0].video_id
+                                ? [...prev, ...response.data.videos]
+                                : prev
+                        );
+                    })
+                    .catch((error) => {
+                        console.log("Error in fetching: ", error.message);
+                    });
+            } else if (user === "Guest") {
+                await axios
+                    .get(`${serverurl}/home?page=${page_no}`)
+                    .then((response) => {
+                        setData((prev) =>
+                            prev === null
+                                ? response.data.videos
+                                : prev[0].video_id !==
+                                  response.data.videos[0].video_id
+                                ? [...prev, ...response.data.videos]
+                                : prev
+                        );
+                    })
+                    .catch((error) => {
+                        console.log("Error in fetching: ", error.message);
+                    });
+            }
         };
 
         fetchData();
-    }, [page_no, user]);
+    }, [page_no, user.channel_id]);
 
     const handleScroll = async () => {
         const cards = document.getElementsByClassName("cards")[0];
@@ -61,33 +81,21 @@ const Home = (params) => {
 
     return (
         <>
-            {params.user !== "Guest" ? (
+            {data ? (
                 <>
-                    {data ? (
-                        <>
-                            <div
-                                className="cards"
-                                onLoad={() => {
-                                    setstartlistner(true);
-                                }}
-                            >
-                                {data.map((item) => (
-                                    <Card key={item.video_id} data={item} />
-                                ))}
-                            </div>
-                        </>
-                    ) : (
-                        <Cardloading />
-                    )}
+                    <div
+                        className="cards"
+                        onLoad={() => {
+                            setstartlistner(true);
+                        }}
+                    >
+                        {data.map((item) => (
+                            <Card key={item.video_id} data={item} />
+                        ))}
+                    </div>
                 </>
             ) : (
-                <div className="home-guestuser">
-                    <h2>Try searching to get started</h2>
-                    <h3>
-                        Start watching videos to help us build a feed of videos
-                        you'll love.
-                    </h3>
-                </div>
+                <Cardloading />
             )}
         </>
     );

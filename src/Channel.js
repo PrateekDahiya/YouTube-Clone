@@ -164,6 +164,7 @@ const Channel = (params) => {
                         <div className="banner">
                             <img
                                 alt="channel_banner"
+                                title="Channel Banner"
                                 src={data.channel_banner}
                             />
                         </div>
@@ -174,6 +175,7 @@ const Channel = (params) => {
                     <div className="channelinfo">
                         <img
                             className="mypic"
+                            title={data.channel_name}
                             alt="Profile"
                             src={data.channel_icon}
                         />
@@ -309,6 +311,7 @@ const Channel = (params) => {
                         >
                             <img
                                 alt="searchchannel"
+                                title="Search Channel"
                                 src="https://cdn-icons-png.flaticon.com/128/2811/2811806.png"
                             />
                         </button>

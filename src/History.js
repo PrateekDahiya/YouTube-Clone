@@ -98,6 +98,7 @@ const History = (params) => {
                         <img
                             alt="remove-history"
                             src="https://cdn-icons-png.flaticon.com/128/1828/1828778.png"
+                            title="Remove from History"
                         />
                         <span>Remove History</span>
                     </div>
@@ -156,6 +157,7 @@ const History = (params) => {
                                 className="guesticon"
                                 src="https://cdn-icons-png.flaticon.com/128/1077/1077063.png"
                                 alt="user"
+                                title="Sign In"
                             />
                             Sign In
                         </button>

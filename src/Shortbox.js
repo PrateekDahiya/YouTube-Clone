@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Shortbox.css";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Shortplayer from "./Shortplayer";
 
@@ -25,7 +26,7 @@ const Shortbox = (params) => {
             const fetchstreamURL = async () => {
                 await axios
                     .get(
-                        `https://flaskapp-production-9eb3.up.railway.app/get-short-url?video_id=` +
+                        `https://flaskapp-ugds.onrender.com/get-short-url?video_id=` +
                             params.short.video_id
                     )
                     .then((response) => {
@@ -55,6 +56,7 @@ const Shortbox = (params) => {
                 <div className="shorts-btn">
                     <img
                         alt="short-btn"
+                        title="Like"
                         src="https://cdn-icons-png.flaticon.com/128/739/739231.png"
                     />
                 </div>
@@ -63,6 +65,7 @@ const Shortbox = (params) => {
                 <div className="shorts-btn">
                     <img
                         alt="short-btn"
+                        title="Dislike"
                         src="https://cdn-icons-png.flaticon.com/128/880/880613.png"
                     />
                 </div>
@@ -71,6 +74,7 @@ const Shortbox = (params) => {
                 <div className="shorts-btn">
                     <img
                         alt="short-btn"
+                        title="Comment"
                         src="https://cdn-icons-png.flaticon.com/128/12356/12356184.png"
                     />
                 </div>
@@ -79,6 +83,7 @@ const Shortbox = (params) => {
                 <div className="shorts-btn">
                     <img
                         alt="short-btn"
+                        title="Share"
                         src="https://cdn-icons-png.flaticon.com/128/2958/2958791.png"
                     />
                 </div>
@@ -87,18 +92,30 @@ const Shortbox = (params) => {
                 <div className="shorts-btn">
                     <img
                         alt="short-btn"
+                        title="More"
                         src="https://cdn-icons-png.flaticon.com/128/10826/10826552.png"
                     />
                 </div>
                 <p>More</p>
 
-                <div className="profile-btn">
+                <Link
+                    to={
+                        shortdata
+                            ? `/channel?channel_id=${shortdata.channel_id}`
+                            : ""
+                    }
+                    className="profile-btn"
+                >
                     {shortdata ? (
-                        <img alt="short-btn" src={shortdata.channel_icon} />
+                        <img
+                            alt="short-btn"
+                            title={shortdata.channel_name}
+                            src={shortdata.channel_icon}
+                        />
                     ) : (
                         ""
                     )}
-                </div>
+                </Link>
             </div>
         </div>
     );

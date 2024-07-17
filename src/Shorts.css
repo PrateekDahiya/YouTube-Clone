@@ -32,18 +32,17 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
     margin-left: 50px;
 }
 
 .arrows img {
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     padding: 10px;
-    background-color: var(--text2-color);
-    border: 1px solid var(--alt-color);
+    border: 1px solid var(--text2-color);
     border-radius: 50%;
     filter: var(--image-filter);
+    cursor: pointer;
 }
 
 .arrows .arrowdown {

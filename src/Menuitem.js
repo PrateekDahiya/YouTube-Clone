@@ -22,6 +22,7 @@ const Menuitem = (params) => {
                             <img
                                 src={params.imgpath}
                                 alt={params.title}
+                                title={params.title}
                                 className="hiddenimg"
                             />
                             <p>{params.title}</p>
@@ -31,6 +32,7 @@ const Menuitem = (params) => {
                             <img
                                 src={params.imgpath}
                                 alt={params.title}
+                                title={params.title}
                                 className={imgClass}
                             />
                             <p>{params.title}</p>

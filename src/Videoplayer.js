@@ -56,12 +56,14 @@ const VideoPlayer = (params) => {
             audio.play().catch((error) => {
                 console.error("Error playing video:", error);
             });
+            audio.muted = false;
             setIsPlaying(true);
         };
 
         const handlePause = () => {
             video.pause();
             audio.pause();
+            audio.muted = true;
             setIsPlaying(false);
         };
 
@@ -80,6 +82,7 @@ const VideoPlayer = (params) => {
         audio.addEventListener("play", handlePlay);
         audio.addEventListener("pause", handlePause);
         video.addEventListener("timeupdate", syncMedia);
+        audio.addEventListener("timeupdate", syncMedia);
         video.addEventListener("loadedmetadata", handleLoadedMetadata);
 
         return () => {
@@ -87,6 +90,7 @@ const VideoPlayer = (params) => {
             video.removeEventListener("pause", handlePause);
             audio.removeEventListener("play", handlePlay);
             audio.removeEventListener("pause", handlePause);
+            audio.removeEventListener("timeupdate", syncMedia);
             video.removeEventListener("timeupdate", syncMedia);
             video.removeEventListener("loadedmetadata", handleLoadedMetadata);
         };
@@ -111,6 +115,9 @@ const VideoPlayer = (params) => {
     const handlefullscreen = () => {
         const video = videoRef.current;
         video.requestFullscreen();
+        if (!isPlaying) {
+            handlePlayPause();
+        }
     };
 
     const handleVolumeChange = (e) => {
@@ -206,11 +213,16 @@ const VideoPlayer = (params) => {
                 <video
                     ref={videoRef}
                     id="myVideo"
-                    className={params.type === "video" ? "video" : "short"}
-                    src={streamUrl}
-                    autoPlay={muted ? false : true}
+                    className={streamUrl !== "" ? "video" : "hidden-video"}
                     muted
+                    src={streamUrl}
                     loop={loop}
+                />
+                <video
+                    className={streamUrl !== "" ? "hidden-video" : "video"}
+                    src="/Assets/loading.mp4"
+                    autoPlay
+                    muted
                 />
                 <audio
                     ref={audioRef}
@@ -247,11 +259,13 @@ const VideoPlayer = (params) => {
                                     <img
                                         src="https://cdn-icons-png.flaticon.com/128/2920/2920686.png"
                                         alt="Pause"
+                                        title="Pause"
                                     />
                                 ) : (
                                     <img
                                         src="https://cdn-icons-png.flaticon.com/128/27/27223.png"
                                         alt="Play"
+                                        title="Play"
                                     />
                                 )}
                             </button>
@@ -279,12 +293,14 @@ const VideoPlayer = (params) => {
                                         <img
                                             src="https://cdn-icons-png.flaticon.com/128/7640/7640162.png"
                                             alt="Volume"
+                                            title="Muted"
                                             className="volume-icon"
                                         />
                                     ) : (
                                         <img
                                             src="https://cdn-icons-png.flaticon.com/128/4024/4024628.png"
                                             alt="Volume"
+                                            title="Volume"
                                             className="volume-icon"
                                         />
                                     )}
@@ -323,6 +339,7 @@ const VideoPlayer = (params) => {
                                 >
                                     <img
                                         src="https://cdn-icons-png.flaticon.com/128/2040/2040504.png"
+                                        title="Settings"
                                         alt="settings"
                                     />
                                 </button>
@@ -344,6 +361,7 @@ const VideoPlayer = (params) => {
                                                     <img
                                                         src="https://cdn-icons-png.flaticon.com/128/53/53128.png"
                                                         alt="playback_speed"
+                                                        title="Playback speed"
                                                         className="options-img"
                                                     />
                                                     Playback speed
@@ -357,6 +375,7 @@ const VideoPlayer = (params) => {
                                                     <img
                                                         src="https://cdn-icons-png.flaticon.com/128/70/70115.png"
                                                         alt="quality"
+                                                        title="Quality"
                                                         className="options-img"
                                                     />
                                                     Quality
@@ -417,6 +436,9 @@ const VideoPlayer = (params) => {
                                                                 params.handleQualityChange(
                                                                     option
                                                                 );
+                                                                const audio =
+                                                                    audioRef.current;
+                                                                audio.muted = true;
                                                                 setIsPlaying(
                                                                     false
                                                                 );
@@ -445,6 +467,9 @@ const VideoPlayer = (params) => {
                                                         params.handleQualityChange(
                                                             0
                                                         );
+                                                        const audio =
+                                                            audioRef.current;
+                                                        audio.muted = true;
                                                         setIsPlaying(false);
                                                     }}
                                                     className="options"
@@ -475,10 +500,10 @@ const VideoPlayer = (params) => {
                                         handlefullscreen();
                                     }}
                                 >
-                                    =
                                     <img
                                         src="https://cdn-icons-png.flaticon.com/128/3876/3876090.png"
                                         alt="fullscreen"
+                                        title="Fullscreen"
                                     />
                                 </button>
                             </div>

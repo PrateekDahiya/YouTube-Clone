@@ -264,6 +264,7 @@ const Shorts = (params) => {
                             className="arrowup"
                             src="https://cdn-icons-png.flaticon.com/128/608/608336.png"
                             alt="arrowup"
+                            title="Previous"
                             onClick={() => {
                                 handlearrowclick("up");
                             }}
@@ -272,6 +273,7 @@ const Shorts = (params) => {
                             className="arrowdown"
                             src="https://cdn-icons-png.flaticon.com/128/608/608336.png"
                             alt="arrowdown"
+                            title="Next"
                             onClick={() => {
                                 handlearrowclick("down");
                             }}

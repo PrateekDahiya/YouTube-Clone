@@ -10,6 +10,10 @@
     border-radius: 20px;
 }
 
+.hidden-video {
+    display: none;
+}
+
 .short {
     width: 330px;
     height: 590px;

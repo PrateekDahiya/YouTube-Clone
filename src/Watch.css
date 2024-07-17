@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     overflow-y: scroll;
+    width: 100%;
 }
 
 .vplayer {
@@ -10,7 +11,21 @@
 }
 
 .watchpage::-webkit-scrollbar {
-    display: none;
+    width: 10px;
+    height: 10px;
+}
+
+.watchpage::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 10px;
+}
+
+.watchpage::-webkit-scrollbar-thumb {
+    background: var(--alt-color);
+}
+
+.watchpage::-webkit-scrollbar-thumb:hover {
+    background: var(--text2-color);
 }
 
 .box {
@@ -157,4 +172,35 @@ button img {
     vertical-align: middle;
     filter: var(--image-filter);
     margin-right: 3px;
+}
+
+.video_details {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+    margin-top: 20px;
+    background-color: var(--alt-color);
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.video_views_upload_time {
+    margin: 5px;
+}
+
+.more-btn {
+    margin: 5px;
+}
+
+.relatedvideos {
+    width: 80%;
+    margin: 0 20px;
+}
+
+.related-videos {
+    display: grid;
+    width: 90%;
+    grid-template-columns: repeat(1, 100%);
+    justify-content: center;
+    overflow: visible;
 }

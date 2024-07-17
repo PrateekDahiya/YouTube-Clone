@@ -46,6 +46,7 @@ const You = (params) => {
                                         <img
                                             alt="channel_banner"
                                             src={data.channel_banner}
+                                            title="Channel Banner"
                                         />
                                     </div>
                                 ) : (
@@ -58,6 +59,7 @@ const You = (params) => {
                                 <img
                                     className="mypic"
                                     alt="Profile"
+                                    title={data.channel_name}
                                     src={data.channel_icon}
                                 />
                                 <div className="details">
@@ -103,6 +105,7 @@ const You = (params) => {
                                 className="guesticon"
                                 src="https://cdn-icons-png.flaticon.com/128/1077/1077063.png"
                                 alt="user"
+                                title="Sign In"
                             />
                             Sign In
                         </button>
